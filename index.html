@@ -3,64 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>社区-极速版</title>
+    <title>极简社区</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --tb-blue: #2D64B3; }
         .tb-text { color: var(--tb-blue); }
         .tb-bg { background-color: var(--tb-blue); }
-        .hidden { display: none; }
-        /* 1/6 比例缩略图 */
+        
+        /* 极致缩小图片：强制 60x60，严禁溢出 */
         .compact-media {
-            width: 75px;
-            height: 75px;
+            width: 60px !important;
+            height: 60px !important;
+            min-width: 60px;
+            min-height: 60px;
             object-fit: cover;
-            border-radius: 6px;
+            border-radius: 4px;
+            flex-shrink: 0;
             background-color: #f3f4f6;
         }
+
+        /* 极致紧凑：标题限制在两行，字号 13px */
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            line-height: 1.3;
+            font-size: 13px;
         }
+        
+        /* 消除点击阴影，提升 App 感 */
+        * { -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="bg-gray-100 pb-20">
+<body class="bg-gray-100 pb-16 font-sans">
 
-    <header class="bg-white p-2 px-3 flex items-center border-b sticky top-0 z-50 shadow-sm">
-        <div class="flex-1 bg-gray-100 rounded-full py-1 px-4 text-gray-400 text-[11px] flex items-center">
-            <span>🔍 搜索 17.3 万个兴趣帖子...</span>
-        </div>
-        <div id="nav-user" class="ml-3 tb-text font-bold text-[11px]" onclick="showAuth()">登录/注册</div>
+    <header class="bg-white p-2 px-3 flex items-center border-b sticky top-0 z-50">
+        <div class="flex-1 bg-gray-100 rounded-full py-1 px-3 text-gray-400 text-[11px]">搜索内容...</div>
+        <div id="nav-user" class="ml-3 tb-text font-bold text-[11px]" onclick="showAuth()">登录</div>
     </header>
 
-    <div class="bg-white p-3 flex items-center border-b">
-        <div class="w-10 h-10 rounded-lg overflow-hidden shadow-sm">
-            <img src="https://picsum.photos/100/100?sig=logo" class="w-full h-full">
+    <div class="bg-white px-3 py-1 flex items-center border-b">
+        <div class="w-6 h-6 rounded bg-blue-50 text-[10px] flex items-center justify-center tb-text font-bold">吧</div>
+        <div class="ml-2">
+            <h1 class="text-[11px] font-bold text-gray-800 leading-none">自由交流吧</h1>
         </div>
-        <div class="ml-3">
-            <h1 class="text-sm font-bold text-gray-800">自由交流吧</h1>
-            <p class="text-[9px] text-gray-400">关注 5.2w | 帖子 17w</p>
-        </div>
-        <button class="ml-auto tb-bg text-white px-4 py-1 rounded-full text-[10px] font-bold">+ 关注</button>
+        <button class="ml-auto tb-bg text-white px-3 py-0.5 rounded-full text-[9px]">关注</button>
     </div>
 
-    <div id="post-container" class="mt-1 space-y-[1px]">
-        </div>
+    <div id="post-container" class="space-y-[1px] bg-gray-200"></div>
 
-    <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around py-2 shadow-2xl z-50">
-        <div class="text-center tb-text"><div class="text-lg">🏠</div><span class="text-[9px]">首页</span></div>
-        <div onclick="checkAuthAndOpenPost()" class="tb-bg text-white w-10 h-9 rounded-xl flex items-center justify-center text-2xl font-light shadow-lg -mt-3 border-2 border-white">+</div>
-        <div class="text-center text-gray-400"><div class="text-lg">👤</div><span class="text-[9px]">我的</span></div>
+    <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around py-1 shadow-lg z-50">
+        <div class="text-center tb-text"><div class="text-lg">🏠</div><span class="text-[8px]">首页</span></div>
+        <div onclick="checkAuthAndOpenPost()" class="tb-bg text-white w-10 h-8 rounded-lg flex items-center justify-center text-xl shadow-lg -mt-2 border-2 border-white">+</div>
+        <div class="text-center text-gray-400"><div class="text-lg">👤</div><span class="text-[8px]">我的</span></div>
     </nav>
 
     <div id="auth-modal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[100] p-6">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h2 class="text-lg font-bold mb-4 text-center">手机号快捷登录</h2>
-            <input id="phone" type="tel" placeholder="输入手机号" class="w-full p-3 bg-gray-50 rounded-xl mb-3 outline-none border text-sm">
-            <button onclick="doLogin()" class="w-full py-3 tb-bg text-white rounded-xl font-bold">立即进入</button>
+        <div class="bg-white rounded-2xl p-6 w-full max-w-xs animate-in fade-in zoom-in duration-200">
+            <h2 class="text-sm font-bold mb-4 text-center">快捷登录</h2>
+            <input id="phone" type="tel" maxlength="11" placeholder="手机号" class="w-full p-2 bg-gray-50 rounded border text-sm outline-none mb-4">
+            <button onclick="doLogin()" class="w-full py-2 tb-bg text-white rounded font-bold text-xs shadow-md">登录进入社区</button>
             <p class="text-center text-[10px] text-gray-400 mt-4" onclick="closeModal('auth-modal')">取消</p>
         </div>
     </div>
@@ -68,76 +72,103 @@
     <div id="post-modal" class="fixed inset-0 bg-white hidden z-[100] flex flex-col">
         <div class="p-3 flex items-center border-b">
             <span onclick="closeModal('post-modal')" class="text-gray-500 text-xs">取消</span>
-            <span class="flex-1 text-center font-bold text-sm">发布内容</span>
+            <span class="flex-1 text-center font-bold text-xs">发布新动态</span>
             <button onclick="submitPost()" class="tb-bg text-white px-5 py-1 rounded-full text-xs font-bold">发布</button>
         </div>
-        <div class="p-4 flex-1">
-            <textarea id="post-content" placeholder="分享此时的想法..." class="w-full h-32 text-sm outline-none resize-none"></textarea>
-            <div id="media-preview" class="flex gap-2 mt-4"></div>
-            <div class="mt-6 border-t pt-4">
-                <input type="file" id="file-input" class="hidden" onchange="handleFile(this)">
-                <button onclick="document.getElementById('file-input').click()" class="text-2xl">🖼️</button>
-                <p class="text-[10px] text-gray-400 mt-2">支持图片或10M内小视频</p>
-            </div>
+        <div class="p-4">
+            <textarea id="post-content" placeholder="这一刻的想法..." class="w-full h-24 text-sm outline-none resize-none" maxlength="500"></textarea>
+            <div id="media-preview"></div>
+            <input type="file" id="file-input" class="hidden" onchange="handleFile(this)">
+            <button onclick="document.getElementById('file-input').click()" class="mt-4 p-2 bg-gray-100 rounded">🖼️ 上传图片/小视频</button>
         </div>
     </div>
 
     <script>
         let isLogin = false;
-        let userName = "";
+        let myNickName = "";
         let mediaData = null;
 
-        // --- 初始化：自动生成 10 个帖子 ---
+        // 核心资源库
+        const nickLib = ["江南墨客", "海上钢琴师", "陆家嘴锦鲤", "极客猫", "冲浪先生", "晚风细雨", "星空下的小吧", "元气少女", "自由骑士", "硬核玩家"];
+
+        // 初始化：生成 10 个内容各异的贴
         window.onload = function() {
             const container = document.getElementById('post-container');
-            const samplePosts = [
-                "今天在上海路边看到一辆超级酷的赛博皮卡！",
-                "求助：有什么好吃的推荐吗？在线等，挺急的。",
-                "这就是 1/6 比例缩略图的效果，一屏能看好多贴。",
-                "大家觉得这款新出的手机怎么样？值得入手吗？",
-                "分享一组最近拍的摄影作品，希望大家喜欢。",
-                "深夜放毒，自己做的这碗面真的太香了。",
-                "有没有一起健身的小伙伴？求组队。",
-                "刚看完这部电影，后劲实在是太大了，推荐！",
-                "早安社区！新的一天也要元气满满哦。",
-                "在这个帖子下面留言，随机抽取一位送积分。"
+            const data = [
+                {t: "这是测试的第一贴，图片已经强制缩小到 60px 了。", img: "https://picsum.photos/120/120?sig=1"},
+                {t: "完全去手机号测试，现在的用户名都是随机生成的昵称。", img: "https://picsum.photos/120/120?sig=2"},
+                {t: "一屏显示 10 个贴测试，内容越紧凑越好。", img: "https://picsum.photos/120/120?sig=3"},
+                {t: "上海今天的天气真不错，适合出去走走。", img: "https://picsum.photos/120/120?sig=4"},
+                {t: "大家对这个新布局满意吗？可以在下面回复。", img: "https://picsum.photos/120/120?sig=5"},
+                {t: "社区守则：禁止灌水，禁止发布违规内容。", img: "https://picsum.photos/120/120?sig=6"},
+                {t: "分享一个最近在学习的软件，效率翻倍。", img: "https://picsum.photos/120/120?sig=7"},
+                {t: "深夜放毒，这家店的生煎包绝了！", img: "https://picsum.photos/120/120?sig=8"},
+                {t: "有一起玩游戏的小伙伴吗？求组队。", img: "https://picsum.photos/120/120?sig=9"},
+                {t: "第 10 贴达成，测试滚动条是否顺滑。", img: "https://picsum.photos/120/120?sig=10"}
             ];
 
-            samplePosts.forEach((content, i) => {
-                const randomUser = generateUserName("1380000" + Math.floor(1000 + Math.random() * 9000));
-                const views = Math.floor(Math.random() * 5000);
-                const reply = Math.floor(Math.random() * 100);
-                const imgUrl = `https://picsum.photos/200/200?sig=${i}`;
-                
-                container.innerHTML += createPostHTML(randomUser, content, imgUrl, views, reply);
+            data.forEach((item, i) => {
+                const name = nickLib[i % nickLib.length] + (100 + i);
+                const views = Math.floor(Math.random() * 8000 + 100);
+                container.innerHTML += createPostHTML(name, item.t, item.img, views);
             });
         };
 
-        function createPostHTML(user, content, media, views, replies) {
+        function createPostHTML(name, content, media, views) {
             return `
-                <div class="bg-white p-3 flex gap-3 border-b active:bg-gray-50">
-                    <div class="flex-1">
+                <div class="bg-white p-2 px-3 flex gap-3 border-b active:bg-gray-50 transition-colors">
+                    <div class="flex-1 overflow-hidden">
                         <div class="flex items-center mb-1 text-[9px] text-gray-400">
-                            <span class="font-bold text-gray-600 mr-2">${user}</span>
-                            <span>浏览量: ${views.toLocaleString()}</span>
+                            <span class="font-bold text-blue-800 mr-2">${name}</span>
+                            <span>浏览量: ${views}</span>
                         </div>
-                        <h3 class="text-[13px] text-gray-800 line-clamp-2 leading-snug">${content}</h3>
-                        <div class="mt-1 text-[9px] text-gray-400">💬 ${replies} 回复</div>
+                        <h3 class="text-gray-800 line-clamp-2">${content}</h3>
                     </div>
                     ${media ? `<img src="${media}" class="compact-media shadow-sm">` : ''}
                 </div>
             `;
         }
 
-        // 用户名生成逻辑
-        function generateUserName(phone) {
-            const prefixes = ["热心吧友", "资深老铁", "冲浪达人", "科技先锋", "自由灵魂", "进击的小白", "极速先锋"];
-            return `${prefixes[Math.floor(Math.random() * prefixes.length)]}_${phone.slice(-4)}`;
-        }
-
-        // 登录/发帖逻辑
         function showAuth() { document.getElementById('auth-modal').classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        
         function doLogin() {
             const phone = document.getElementById('phone').value;
-            if(!/^1[3-9]\d{9}$/.test(phone)) return alert("号码格式不对
+            if(!/^1[3-9]\d{9}$/.test(phone)) return alert("请输入有效手机号");
+            isLogin = true;
+            // 彻底切断手机号与昵称的联系，随机分配库里的名字
+            myNickName = nickLib[Math.floor(Math.random() * nickLib.length)] + "_新成员";
+            document.getElementById('nav-user').innerText = myNickName;
+            closeModal('auth-modal');
+            alert("登录成功！");
+        }
+
+        function checkAuthAndOpenPost() {
+            if(!isLogin) return showAuth();
+            document.getElementById('post-modal').classList.remove('hidden');
+        }
+
+        function handleFile(input) {
+            const file = input.files[0];
+            if(file.size > 10 * 1024 * 1024) return alert("文件不能超过10M");
+            const reader = new FileReader();
+            reader.onload = e => {
+                mediaData = e.target.result;
+                document.getElementById('media-preview').innerHTML = `<img src="${e.target.result}" class="compact-media mt-3 border">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function submitPost() {
+            const content = document.getElementById('post-content').value;
+            if(!content && !mediaData) return;
+            const html = createPostHTML(myNickName, content, mediaData, 1);
+            document.getElementById('post-container').insertAdjacentHTML('afterbegin', html);
+            closeModal('post-modal');
+            document.getElementById('post-content').value = "";
+            document.getElementById('media-preview').innerHTML = "";
+            mediaData = null;
+        }
+    </script>
+</body>
+</html>
