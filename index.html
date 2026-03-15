@@ -9,6 +9,8 @@
         :root { --tb-blue: #2D64B3; }
         .tb-text { color: var(--tb-blue); }
         .tb-bg { background-color: var(--tb-blue); }
+        /* 弹窗动画 */
+        .modal { transition: opacity 0.3s ease; }
     </style>
 </head>
 <body class="bg-gray-100 pb-16">
@@ -23,22 +25,42 @@
             <img src="https://picsum.photos/200" class="w-full h-full">
         </div>
         <div class="ml-4 mb-2">
-            <h1 class="text-xl font-bold">上海吧</h1>
-            <p class="text-xs text-gray-500">关注 255万 | 帖子 1737万</p>
+            <h1 class="text-xl font-bold">资源吧</h1>
+            <p class="text-xs text-gray-500">我的积分: <span id="user-points" class="text-orange-500 font-bold">50</span></p>
         </div>
-        <button class="ml-auto mb-2 tb-bg text-white px-6 py-1 rounded-full text-sm">+ 关注</button>
+        <button class="ml-auto mb-2 tb-bg text-white px-6 py-1 rounded-full text-sm">已关注</button>
     </div>
 
-    <div class="mt-2 space-y-2">
-        <div class="bg-white p-4">
-            <h3 class="tb-text text-lg font-medium">【资源分享】最新4K航拍素材，回复可见提取码</h3>
-            <p class="text-gray-600 text-sm mt-1 line-clamp-2">这是一段关于资源的描述，采用了百度贴吧的紧凑布局...</p>
-            <div class="mt-2 p-3 bg-blue-50 border border-blue-100 rounded text-center text-sm tb-text">
-                🔒 此内容为隐藏资源，点击解锁
+    <div class="mt-2 space-y-2 px-2">
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+            <h3 class="tb-text text-lg font-medium">【核心资源】2026最新UI设计组件库</h3>
+            <p class="text-gray-600 text-sm mt-1">这是完全复刻的资源展示逻辑，点击下方解锁...</p>
+            
+            <div id="resource-box" class="mt-4 p-6 bg-blue-50 border-2 border-dashed border-blue-200 rounded-lg text-center">
+                <div id="lock-ui">
+                    <p class="tb-text mb-2 font-bold">🔒 此资源需要 10 积分解锁</p>
+                    <button onclick="showUnlockModal()" class="tb-bg text-white px-8 py-2 rounded-lg active:opacity-80">立即解锁</button>
+                </div>
+                <div id="unlock-ui" class="hidden">
+                    <p class="text-green-600 font-bold mb-2">✅ 解锁成功！</p>
+                    <a href="#" class="text-blue-600 underline">点击下载：百度网盘链接 (提取码: 8888)</a>
+                </div>
             </div>
+
             <div class="flex justify-between mt-4 text-xs text-gray-400">
-                <span>资源帝</span>
-                <span>💬 128  👍 56</span>
+                <span>发布于 20:11</span>
+                <span>💬 99+  👍 56</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal fixed inset-0 bg-black/50 hidden flex items-center justify-center z-[100] p-6">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm text-center">
+            <h4 class="text-lg font-bold mb-4">确认解锁资源？</h4>
+            <p class="text-gray-500 mb-6">将扣除 10 积分，剩余 40 积分</p>
+            <div class="flex gap-4">
+                <button onclick="hideModal()" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold">取消</button>
+                <button onclick="confirmUnlock()" class="flex-1 py-3 tb-bg text-white rounded-xl font-bold">确认解锁</button>
             </div>
         </div>
     </div>
@@ -46,9 +68,26 @@
     <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around py-2 shadow-inner">
         <div class="text-center tb-text"><div class="text-xl">🏠</div><span class="text-[10px]">首页</span></div>
         <div class="text-center text-gray-400"><div class="text-xl">🏢</div><span class="text-[10px]">进吧</span></div>
-        <div class="tb-bg text-white w-10 h-10 rounded-xl flex items-center justify-center text-2xl font-bold shadow-lg">+</div>
+        <div class="tb-bg text-white w-10 h-10 rounded-xl flex items-center justify-center text-2xl font-bold">+</div>
         <div class="text-center text-gray-400"><div class="text-xl">🔔</div><span class="text-[10px]">消息</span></div>
         <div class="text-center text-gray-400"><div class="text-xl">👤</div><span class="text-[10px]">我的</span></div>
     </nav>
+
+    <script>
+        function showUnlockModal() {
+            document.getElementById('modal').classList.remove('hidden');
+        }
+        function hideModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+        function confirmUnlock() {
+            // 模拟扣费过程
+            document.getElementById('user-points').innerText = '40';
+            document.getElementById('lock-ui').classList.add('hidden');
+            document.getElementById('unlock-ui').classList.remove('hidden');
+            hideModal();
+            alert('支付成功！已为您展示资源链接');
+        }
+    </script>
 </body>
 </html>
