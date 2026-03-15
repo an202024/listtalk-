@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>演示论坛-手机预览</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --tb-blue: #2D64B3; }
+        .tb-text { color: var(--tb-blue); }
+        .tb-bg { background-color: var(--tb-blue); }
+    </style>
+</head>
+<body class="bg-gray-100 pb-16">
+    <header class="bg-white p-3 flex items-center border-b sticky top-0 z-50">
+        <div class="flex-1 bg-gray-100 rounded-full py-1 px-4 text-gray-400 text-sm">搜索帖子...</div>
+        <div class="ml-4 tb-text font-bold">登录</div>
+    </header>
+
+    <div class="h-32 bg-cover bg-center" style="background-image: url('https://picsum.photos/800/300')"></div>
+    <div class="bg-white p-4 flex items-end -mt-8 px-4">
+        <div class="w-20 h-20 bg-white border-2 border-white rounded-xl shadow-lg overflow-hidden">
+            <img src="https://picsum.photos/200" class="w-full h-full">
+        </div>
+        <div class="ml-4 mb-2">
+            <h1 class="text-xl font-bold">上海吧</h1>
+            <p class="text-xs text-gray-500">关注 255万 | 帖子 1737万</p>
+        </div>
+        <button class="ml-auto mb-2 tb-bg text-white px-6 py-1 rounded-full text-sm">+ 关注</button>
+    </div>
+
+    <div class="mt-2 space-y-2">
+        <div class="bg-white p-4">
+            <h3 class="tb-text text-lg font-medium">【资源分享】最新4K航拍素材，回复可见提取码</h3>
+            <p class="text-gray-600 text-sm mt-1 line-clamp-2">这是一段关于资源的描述，采用了百度贴吧的紧凑布局...</p>
+            <div class="mt-2 p-3 bg-blue-50 border border-blue-100 rounded text-center text-sm tb-text">
+                🔒 此内容为隐藏资源，点击解锁
+            </div>
+            <div class="flex justify-between mt-4 text-xs text-gray-400">
+                <span>资源帝</span>
+                <span>💬 128  👍 56</span>
+            </div>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around py-2 shadow-inner">
+        <div class="text-center tb-text"><div class="text-xl">🏠</div><span class="text-[10px]">首页</span></div>
+        <div class="text-center text-gray-400"><div class="text-xl">🏢</div><span class="text-[10px]">进吧</span></div>
+        <div class="tb-bg text-white w-10 h-10 rounded-xl flex items-center justify-center text-2xl font-bold shadow-lg">+</div>
+        <div class="text-center text-gray-400"><div class="text-xl">🔔</div><span class="text-[10px]">消息</span></div>
+        <div class="text-center text-gray-400"><div class="text-xl">👤</div><span class="text-[10px]">我的</span></div>
+    </nav>
+</body>
+</html>
