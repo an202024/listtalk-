@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GZ022.US.CI - 官方内容精选</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --tb-blue: #2D64B3; }
         .tb-text { color: var(--tb-blue); }
         #group-detail-page, #auth-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 9999; display: none; flex-direction: column; }
         ::-webkit-scrollbar { display: none; }
-        * { -webkit-tap-highlight-color: transparent; }
         .photo-card { border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; aspect-ratio: 1/1; background: #f9fafb; border: 1px solid #f3f4f6; }
         .content-card { border-radius: 1rem; box-shadow: 0 4px 12px -2px rgba(0,0,0,0.08); border: 1px solid #f3f4f6; }
         .active-scale:active { transform: scale(0.96); transition: 0.1s; }
@@ -35,7 +34,7 @@
     <div class="max-w-4xl mx-auto p-4 border-t">
         <h2 class="font-bold text-gray-800 text-[14px] mb-3 uppercase">📝 发表留言</h2>
         <div class="flex gap-2">
-            <input id="comment-input" type="text" maxlength="50" placeholder="直接在此输入留言 (50字)..." class="flex-1 bg-white border rounded-xl px-4 py-3 text-sm outline-none">
+            <input id="comment-input" type="text" maxlength="50" placeholder="欢迎在此直接留言..." class="flex-1 bg-white border rounded-xl px-4 py-3 text-sm outline-none">
             <button onclick="submitComment()" class="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-black active-scale">提交</button>
         </div>
     </div>
@@ -48,23 +47,23 @@
         <div class="p-4 flex items-center border-b sticky top-0 bg-white z-[10000] justify-between shadow-sm">
             <div class="flex items-center">
                 <button onclick="closeGroupDetail()" class="text-gray-600 text-3xl mr-4 px-2">←</button>
-                <span id="group-title" class="font-black text-sm uppercase">Detail View</span>
+                <span class="font-black text-sm uppercase">Detail View</span>
             </div>
             <div id="admin-upload-ctrl" class="hidden">
                 <input type="file" id="batch-file" multiple accept="image/*" class="hidden" onchange="handleBatchUpload()">
-                <label for="batch-file" class="bg-black text-white px-5 py-2 rounded-full text-xs font-black active-scale cursor-pointer">Upload (1-6)</label>
+                <label for="batch-file" class="bg-black text-white px-5 py-2 rounded-full text-xs font-black active-scale cursor-pointer uppercase">Upload</label>
             </div>
         </div>
         <div id="related-grid" class="p-4 grid grid-cols-2 gap-4"></div>
-        <div id="status-msg" class="hidden text-center py-6 font-bold text-blue-600 animate-pulse text-sm">上传同步中...</div>
+        <div id="status-msg" class="hidden text-center py-6 font-bold text-blue-600 animate-pulse text-sm">正在同步云端数据...</div>
     </div>
 
     <div id="auth-modal" class="justify-center items-center px-10 bg-black/40">
         <div class="bg-white w-full rounded-[2.5rem] p-8 shadow-2xl">
-            <input id="user-input" type="text" placeholder="用户名" class="w-full bg-gray-50 rounded-xl p-4 mb-4 outline-none border">
-            <input id="pwd-input" type="password" placeholder="密码" class="w-full bg-gray-50 rounded-xl p-4 mb-6 outline-none border">
-            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black active-scale">登录</button>
-            <button onclick="closeAuth()" class="w-full text-gray-300 text-xs py-4">返回</button>
+            <input id="user-input" type="text" placeholder="Admin ID" class="w-full bg-gray-50 rounded-xl p-4 mb-4 outline-none border">
+            <input id="pwd-input" type="password" placeholder="Password" class="w-full bg-gray-50 rounded-xl p-4 mb-6 outline-none border">
+            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black">LOGIN</button>
+            <button onclick="closeAuth()" class="w-full text-gray-300 text-xs py-4">BACK</button>
         </div>
     </div>
 
@@ -78,14 +77,15 @@
 
         window.onload = () => { 
             if(is_admin) document.getElementById('login-status-btn').innerText = "Admin On";
-            renderMainGrid(); fetchFeedbacks(); 
+            renderMainGrid(); 
+            fetchFeedbacks(); 
         };
 
         function handleLogin() {
             if(document.getElementById('user-input').value === 'admin' && document.getElementById('pwd-input').value === 'admin2020') {
                 sessionStorage.setItem('is_admin', 'true');
                 location.reload();
-            } else { alert("验证失败"); }
+            } else { alert("Error"); }
         }
 
         async function renderMainGrid() {
@@ -94,7 +94,7 @@
             let html = '';
             for(let i=1; i<=18; i++) {
                 const groupPhotos = data?.filter(item => item.group_id == i);
-                const coverImg = groupPhotos && groupPhotos.length > 0 ? groupPhotos[0].img_url : null;
+                const coverImg = (groupPhotos && groupPhotos.length > 0) ? groupPhotos[0].img_url : null;
                 html += `<div onclick="openGroupDetail(${i})" class="photo-card active-scale">${coverImg ? `<img src="${coverImg}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-200 text-2xl font-black italic">${i}</div>`}</div>`;
             }
             grid.innerHTML = html;
@@ -104,51 +104,63 @@
             activeGroupId = id;
             document.getElementById('group-detail-page').style.display = 'flex';
             const { data } = await client.from('gallery').select('*').eq('group_id', id).order('created_at', { ascending: true });
-            document.getElementById('related-grid').innerHTML = (data || []).map(item => `<div class="photo-card border-none"><img src="${item.img_url}" class="w-full h-full object-cover rounded-2xl"></div>`).join('');
+            document.getElementById('related-grid').innerHTML = (data || []).map(item => `<div class="photo-card border-none shadow-none"><img src="${item.img_url}" class="w-full h-full object-cover rounded-2xl"></div>`).join('');
             if(is_admin) document.getElementById('admin-upload-ctrl').classList.remove('hidden');
         }
 
-        // ✅ 核心优化后的上传逻辑
+        // ✅ 修复：上传并立即局部刷新
         async function handleBatchUpload() {
             const files = document.getElementById('batch-file').files;
-            if (files.length > 6 || files.length === 0) return alert("选择1-6张照片");
-
+            if (files.length === 0) return;
             document.getElementById('status-msg').classList.remove('hidden');
 
             for (let file of files) {
                 const path = `GZ_${activeGroupId}_${Date.now()}_${Math.random().toString(36).substr(2,4)}.jpg`;
-                const { error: upErr } = await client.storage.from('photos').upload(path, file, { upsert: false });
+                const { error: upErr } = await client.storage.from('photos').upload(path, file);
 
                 if (!upErr) {
-                    // 使用官方 SDK 获取 Public URL
-                    const { data: publicUrlData } = client.storage.from('photos').getPublicUrl(path);
-
+                    const { data: pData } = client.storage.from('photos').getPublicUrl(path);
                     await client.from('gallery').insert([{
-                        img_url: publicUrlData.publicUrl,
+                        img_url: pData.publicUrl,
                         group_id: activeGroupId,
                         description: "Official"
                     }]);
                 }
             }
-
             document.getElementById('status-msg').classList.add('hidden');
-            alert("同步成功");
-            // 原地刷新详情，重新渲染首页背景
-            openGroupDetail(activeGroupId);
-            renderMainGrid();
+            // 局部刷新，不闪退
+            await openGroupDetail(activeGroupId);
+            renderMainGrid(); 
         }
 
+        // ✅ 修复：游客留言提交后立即刷新显示
         async function submitComment() {
-            const content = document.getElementById('comment-input').value;
-            if(!content) return;
-            await client.from('customer_feedback').insert([{ user_name: "访客" + Math.floor(Math.random()*999), content: content.substring(0, 50) }]);
-            document.getElementById('comment-input').value = "";
-            fetchFeedbacks();
+            const val = document.getElementById('comment-input').value;
+            if(!val) return;
+            const user_name = "访客" + Math.floor(Math.random()*999);
+            const { error } = await client.from('customer_feedback').insert([{ user_name, content: val.substring(0, 50) }]);
+            
+            if(!error) {
+                document.getElementById('comment-input').value = "";
+                await fetchFeedbacks(); // 立即重新抓取最新留言
+            } else {
+                console.error("留言失败:", error);
+            }
         }
 
         async function fetchFeedbacks() {
             const { data } = await client.from('customer_feedback').select('*').order('created_at', { ascending: false });
-            if (data) document.getElementById('feedback-container').innerHTML = data.map(f => `<div class="bg-white p-5 content-card mb-4"><div class="text-[12px] font-black text-blue-600 mb-1 uppercase">${f.user_name}</div><div class="text-[14px] text-gray-600">${f.content}</div></div>`).join('');
+            const container = document.getElementById('feedback-container');
+            if (data && data.length > 0) {
+                container.innerHTML = data.map(f => `
+                    <div class="bg-white p-5 content-card active:bg-gray-50 transition-all">
+                        <div class="text-[12px] font-black text-blue-600 mb-1 uppercase">${f.user_name}</div>
+                        <div class="text-[14px] text-gray-600 font-medium">${f.content}</div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = `<div class="text-center text-gray-300 py-10 text-xs italic">尚无留言</div>`;
+            }
         }
 
         function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; }
