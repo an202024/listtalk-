@@ -5,124 +5,167 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GZ022.US.CI - 官方内容精选</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --tb-blue: #2D64B3; }
         .tb-text { color: var(--tb-blue); }
-        #detail-page, #photo-detail-page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 9999; display: none; flex-direction: column; }
+        #photo-detail-page, #upload-modal, #auth-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 9999; display: none; flex-direction: column; }
         ::-webkit-scrollbar { display: none; }
         * { -webkit-tap-highlight-color: transparent; }
-        .photo-card { border-radius: 0.75rem; box-shadow: 0 2px 5px rgba(0,0,0,0.08); overflow: hidden; aspect-ratio: 1/1; }
-        .content-card { border-radius: 1rem; box-shadow: 0 4px 10px -2px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; }
+        .photo-card { border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; aspect-ratio: 1/1; background: #f9fafb; border: 1px solid #f3f4f6; }
+        .content-card { border-radius: 1rem; box-shadow: 0 4px 12px -2px rgba(0,0,0,0.08); border: 1px solid #f3f4f6; }
+        .active-scale:active { transform: scale(0.96); transition: 0.1s; }
     </style>
 </head>
-<body class="bg-gray-50 pb-12">
+<body class="bg-gray-50 pb-24">
 
     <header class="bg-white p-4 flex flex-col border-b sticky top-0 z-50">
-        <div class="flex items-center justify-between w-full mb-2">
-            <div class="font-black text-xl tb-text tracking-tighter uppercase leading-none">GZ022.US.CI</div>
+        <div class="flex items-center justify-between w-full mb-1">
+            <div class="font-black text-xl tb-text tracking-tighter uppercase italic leading-none">GZ022.US.CI</div>
             <div class="flex items-center gap-3">
-                <a href="https://github.com/join" target="_blank" class="text-[12px] font-bold text-gray-500 border px-3 py-1 rounded-full active:bg-gray-100">用户注册</a>
-                <div onclick="if(window.Tawk_API) window.Tawk_API.toggle()" class="flex items-center gap-1.5 cursor-pointer active:opacity-60">
+                <button onclick="openAuth()" id="reg-btn" class="text-[12px] font-bold text-gray-400 border px-3 py-1 rounded-full active-scale">用户注册</button>
+                <div onclick="if(window.Tawk_API) window.Tawk_API.toggle()" class="flex items-center gap-1.5 cursor-pointer active-scale">
                     <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                    <span class="text-green-500 text-[13px] font-bold">● 客服在线</span>
+                    <span class="text-green-500 text-[13px] font-bold tracking-tight">● 客服在线</span>
                 </div>
             </div>
         </div>
     </header>
 
     <div class="max-w-4xl mx-auto p-4">
-        <div class="flex justify-between items-end mb-4">
-            <h2 class="font-bold text-gray-800 text-[14px]">🔥 今日热门</h2>
-        </div>
+        <h2 class="font-black text-gray-800 text-[15px] mb-4">🔥 今日热门</h2>
         <div id="photo-grid" class="grid grid-cols-3 gap-2.5">
-            </div>
+            <div class="photo-card animate-pulse bg-gray-200"></div>
+            <div class="photo-card animate-pulse bg-gray-200"></div>
+            <div class="photo-card animate-pulse bg-gray-200"></div>
+        </div>
     </div>
 
     <div class="max-w-4xl mx-auto p-4 border-t border-gray-100 mt-2">
         <h2 class="font-bold text-gray-800 text-[14px] italic mb-1">💬 客户反馈</h2>
-        <p class="text-[10px] text-blue-500 mb-4 tracking-tighter">提示：任何人只要注册后就可以在这里留言反馈，只限于文字。</p>
+        <p class="text-[10px] text-blue-500 mb-4 tracking-tighter">提示：任何人注册后即可留言反馈，只限文字。</p>
         <div id="feedback-container" class="space-y-4"></div>
     </div>
 
-    <footer class="text-center py-10">
-        <a href="https://github.com/an202024/listtalk-/edit/main/index.html" target="_blank" class="bg-gray-800 text-white px-6 py-2 rounded-full text-[12px] font-bold shadow-lg active:scale-95 transition-transform">管理员上传照片</a>
-    </footer>
-
-    <div id="photo-detail-page" class="overflow-y-auto">
-        <div class="p-4 flex items-center border-b sticky top-0 bg-white z-[10000]">
-            <button onclick="closePhotoDetail()" class="text-gray-600 text-2xl mr-4 px-2">←</button>
-            <span class="font-bold text-sm">关联展示</span>
-        </div>
-        <div class="p-4 grid grid-cols-2 gap-4">
-            <div id="related-photo-container" class="contents"></div>
-        </div>
-        <div class="p-10 text-center text-gray-300 text-[10px] tracking-widest">END</div>
+    <div class="fixed bottom-6 left-0 right-0 px-6 z-40">
+        <button onclick="openUpload()" class="w-full bg-gray-900 text-white py-4 rounded-full text-[14px] font-black shadow-2xl active-scale tracking-widest uppercase">
+            管理员上传照片
+        </button>
     </div>
 
-    <div id="detail-page">
-        <div class="p-4 flex items-center border-b sticky top-0 bg-white"><button onclick="closeDetail()" class="text-gray-600 text-2xl mr-4 px-2">←</button><span class="font-bold text-sm">反馈内容</span></div>
-        <div id="detail-content" class="p-6 overflow-y-auto"></div>
+    <div id="photo-detail-page" class="overflow-y-auto">
+        <div class="p-4 flex items-center border-b sticky top-0 bg-white z-50">
+            <button onclick="closePhotoDetail()" class="text-gray-600 text-3xl mr-4 px-2">←</button>
+            <span class="font-bold text-sm">关联展示</span>
+        </div>
+        <div class="p-4 grid grid-cols-2 gap-4" id="related-grid"></div>
+    </div>
+
+    <div id="upload-modal" class="p-8">
+        <h3 class="text-xl font-black mb-8 italic uppercase text-center">Admin Upload</h3>
+        <input type="file" id="file-input" accept="image/*" class="mb-6 block w-full text-sm text-gray-500">
+        <input type="text" id="img-desc" maxlength="10" placeholder="10字以内的描述..." class="w-full border-b py-3 outline-none mb-8 text-sm">
+        <button onclick="handleUpload()" id="up-btn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg active-scale">确认上传</button>
+        <button onclick="closeUpload()" class="w-full text-gray-400 text-sm mt-4">关闭</button>
+    </div>
+
+    <div id="auth-modal" class="justify-center items-center px-10 bg-black/40">
+        <div class="bg-white w-full rounded-[2rem] p-8 shadow-2xl">
+            <h3 class="text-lg font-bold mb-6 text-center">用户注册 / 登录</h3>
+            <input id="auth-email" type="email" placeholder="邮箱" class="w-full bg-gray-50 border-none rounded-xl p-4 mb-4 outline-none text-sm">
+            <input id="auth-pwd" type="password" placeholder="密码" class="w-full bg-gray-50 border-none rounded-xl p-4 mb-6 outline-none text-sm">
+            <button onclick="handleAuth()" class="w-full bg-gray-900 text-white py-4 rounded-xl font-bold active-scale mb-4">提交</button>
+            <button onclick="closeAuth()" class="w-full text-gray-400 text-xs">取消</button>
+        </div>
     </div>
 
     <script>
-        // 首页 18 张图数据
-        function renderHomePhotos() {
-            const container = document.getElementById('photo-grid');
-            let html = '';
-            for(let i=1; i<=18; i++) {
-                html += `<div onclick="openPhotoDetail(${i})" class="photo-card bg-gray-200 active:scale-95 transition-all"><img src="https://picsum.photos/400/400?sig=${i}" class="w-full h-full object-cover"></div>`;
+        const SB_URL = "https://rdqnfgslchwzxrvzluyg.supabase.co";
+        const SB_KEY = "sb_publishable_lpKx8N7N6s3JNKbcmqyBGQ_to3pZXQk";
+        const client = supabase.createClient(SB_URL, SB_KEY);
+
+        window.onload = () => { fetchPhotos(); fetchFeedbacks(); };
+
+        async function fetchPhotos() {
+            const { data } = await client.from('gallery').select('*').order('created_at', { ascending: false }).limit(18);
+            const grid = document.getElementById('photo-grid');
+            if (data && data.length > 0) {
+                grid.innerHTML = data.map(item => `
+                    <div onclick="openPhotoDetail('${item.img_url}')" class="photo-card active-scale">
+                        <img src="${item.img_url}" class="w-full h-full object-cover">
+                    </div>
+                `).join('');
+            } else {
+                grid.innerHTML = '<div class="col-span-3 py-20 text-center text-gray-300 text-xs italic">NO PHOTOS YET</div>';
             }
-            container.innerHTML = html;
         }
 
-        // 详情页 2*3 关联图渲染
-        function openPhotoDetail(mainId) {
-            const container = document.getElementById('related-photo-container');
+        async function handleUpload() {
+            const file = document.getElementById('file-input').files[0];
+            const desc = document.getElementById('img-desc').value;
+            const btn = document.getElementById('up-btn');
+            if (!file) return alert("请先选择照片");
+            btn.disabled = true; btn.innerText = "上传中...";
+
+            const fileName = `GZ_${Date.now()}_${file.name}`;
+            const { error: uploadErr } = await client.storage.from('photos').upload(fileName, file);
+            if (uploadErr) { alert("失败: " + uploadErr.message); btn.disabled = false; return; }
+
+            const publicUrl = `${SB_URL}/storage/v1/object/public/photos/${fileName}`;
+            await client.from('gallery').insert([{ img_url: publicUrl, description: desc.substring(0, 10) }]);
+            location.reload();
+        }
+
+        function openPhotoDetail(url) {
+            const grid = document.getElementById('related-grid');
             let html = '';
-            for(let i=1; i<=6; i++) {
+            for(let i=0; i<6; i++) {
                 html += `
                 <div class="flex flex-col gap-2">
-                    <div class="photo-card"><img src="https://picsum.photos/400/400?sig=${mainId}${i}" class="w-full h-full object-cover"></div>
-                    <div class="text-[11px] text-gray-500 text-center truncate">这是测试文字刚好十个字</div>
+                    <div class="photo-card border-none shadow-none"><img src="${url}" class="w-full h-full object-cover rounded-xl"></div>
+                    <div class="text-[11px] text-gray-400 text-center truncate">官方精选展示内容</div>
                 </div>`;
             }
-            container.innerHTML = html;
+            grid.innerHTML = html;
             document.getElementById('photo-detail-page').style.display = 'flex';
-            window.scrollTo(0,0);
+        }
+
+        async function fetchFeedbacks() {
+            const { data } = await client.from('customer_feedback').select('*').order('created_at', { ascending: false });
+            if (data) {
+                document.getElementById('feedback-container').innerHTML = data.map(f => `
+                    <div class="bg-white p-5 content-card active:bg-gray-50">
+                        <div class="text-[12px] font-black text-blue-600 mb-1 uppercase">${f.user_name}</div>
+                        <div class="text-[14px] text-gray-600">${f.content}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-pwd').value;
+            const { error } = await client.auth.signUp({ email, password });
+            if (error) {
+                const { error: logErr } = await client.auth.signInWithPassword({ email, password });
+                if (logErr) alert("认证失败"); else alert("登录成功");
+            } else { alert("注册成功"); }
+            location.reload();
         }
 
         function closePhotoDetail() { document.getElementById('photo-detail-page').style.display = 'none'; }
-
-        // 反馈数据
-        const feedbacks = [{ id: 1, user: "用户_992", time: "1小时前", content: "已经注册，这里的照片清晰度非常高，支持！" }];
-        function renderFeedbacks() {
-            document.getElementById('feedback-container').innerHTML = feedbacks.map(f => `
-                <div onclick="openDetail(${f.id})" class="bg-white p-4 content-card active:bg-gray-50 transition-all">
-                    <div class="flex justify-between mb-1"><span class="text-[11px] font-bold text-blue-600">${f.user}</span><span class="text-[10px] text-gray-300">${f.time}</span></div>
-                    <div class="text-[13px] text-gray-600">${f.content}</div>
-                </div>
-            `).join('');
-        }
-
-        function openDetail(id) {
-            const f = feedbacks.find(x => x.id === id);
-            document.getElementById('detail-content').innerHTML = `<div class="text-gray-800 leading-relaxed">${f.content}</div>`;
-            document.getElementById('detail-page').style.display = 'flex';
-        }
-        function closeDetail() { document.getElementById('detail-page').style.display = 'none'; }
-
-        window.onload = () => { renderHomePhotos(); renderFeedbacks(); };
+        function openUpload() { document.getElementById('upload-modal').style.display = 'flex'; }
+        function closeUpload() { document.getElementById('upload-modal').style.display = 'none'; }
+        function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; }
+        function closeAuth() { document.getElementById('auth-modal').style.display = 'none'; }
     </script>
 
     <script type="text/javascript">
     var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
     (function(){
     var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/67ede97a6e37941913988636/1imrtg97t';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
+    s1.async=true; s1.src='https://embed.tawk.to/67ede97a6e37941913988636/1imrtg97t';
+    s1.charset='UTF-8'; s1.setAttribute('crossorigin','*'); s0.parentNode.insertBefore(s1,s0);
     })();
     </script>
 </body>
