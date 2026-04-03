@@ -9,46 +9,16 @@
         :root { --tb-blue: #2D64B3; }
         .tb-text { color: var(--tb-blue); }
         .tb-bg { background-color: var(--tb-blue); }
-        
-        .compact-media {
-            width: 60px !important;
-            height: 60px !important;
-            min-width: 60px;
-            object-fit: cover;
-            border-radius: 4px;
-            flex-shrink: 0;
-        }
-
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-height: 1.4;
-            font-size: 13px;
-        }
-        
-        #detail-page, #video-page {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #fff;
-            z-index: 9999;
-            display: none;
-            flex-direction: column;
-        }
-
+        #detail-page, #video-page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 9999; display: none; flex-direction: column; }
         * { -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="bg-gray-100 pb-16">
+<body class="bg-gray-100 pb-20">
 
     <header class="bg-white p-2 px-3 flex items-center border-b sticky top-0 z-50 shadow-sm">
         <div class="flex-1 bg-gray-100 rounded-full py-1 px-3 text-gray-400 text-[11px]">搜索帖子...</div>
-        <div id="nav-user" class="ml-3 tb-text font-bold text-[11px]" onclick="showAuth()">登录</div>
+        <div id="nav-user" class="ml-3 tb-text font-bold text-[11px]" onclick="showAuth()">登录 / 注册</div>
     </header>
 
     <div class="bg-white px-3 py-1 flex items-center border-b mb-2">
@@ -58,63 +28,30 @@
     </div>
 
     <div class="max-w-6xl mx-auto px-0 md:px-2 mb-2">
-        <div class="bg-white border rounded p-3 shadow-sm flex flex-col">
+        <div class="bg-white border rounded p-3 shadow-sm">
             <div class="flex justify-between items-center border-b pb-1 mb-2">
                 <div class="text-[11px] font-bold text-gray-800">热门视频</div>
                 <div class="flex gap-2 items-center">
-                    <button id="btn-post-video" onclick="showVideoModal()" class="hidden tb-bg text-white text-[9px] px-2 py-0.5 rounded shadow-sm">发布视频</button>
+                    <button id="btn-post-video" onclick="showVideoModal()" class="hidden tb-bg text-white text-[9px] px-2 py-0.5 rounded">发布视频</button>
                     <button onclick="openVideoPage()" class="text-gray-500 text-[9px]">查看全部 ></button>
                 </div>
             </div>
-            <div id="home-video-container" class="flex gap-2 justify-between cursor-pointer" onclick="openVideoPage()">
-                </div>
+            <div id="home-video-container" class="flex gap-2 justify-between cursor-pointer" onclick="openVideoPage()"></div>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row px-0 md:px-2 gap-2">
-        <div class="w-full md:w-[65%]">
-            <div id="post-container" class="space-y-[1px] bg-gray-200"></div>
-        </div>
-        <div class="w-full md:w-[35%] flex flex-col gap-2 p-2 md:p-0">
-            <div class="bg-white border rounded p-3 text-center text-xs text-gray-500 shadow-sm min-h-[100px] flex items-center justify-center">右侧区块 2</div>
-            <div class="bg-white border rounded p-3 text-center text-xs text-gray-500 shadow-sm min-h-[150px] flex items-center justify-center">右侧区块 3</div>
-        </div>
-    </div>
-
-    <div id="detail-page">
-        <div class="p-3 flex items-center border-b bg-white">
-            <button onclick="closeDetail()" class="text-gray-600 text-2xl px-2">←</button>
-            <span class="font-bold text-sm ml-2">帖子正文</span>
-        </div>
-        <div class="p-4 flex-1 overflow-y-auto">
-            <div class="flex items-center mb-4">
-                <div id="dt-avatar-container">
-                    <div class="w-9 h-9 bg-blue-50 rounded-full flex items-center justify-center text-xs tb-text font-bold">吧</div>
-                </div>
-                <div class="ml-3">
-                    <div id="dt-author" class="text-xs font-bold text-blue-800"></div>
-                    <div id="dt-views" class="text-[10px] text-orange-500 font-bold"></div>
-                </div>
-            </div>
-            <h2 id="dt-title" class="text-base font-medium text-gray-900 leading-relaxed mb-4"></h2>
-            <div id="dt-media" class="w-full flex flex-col gap-2"></div>
-            <div class="h-20 border-t mt-12 pt-10 text-center text-gray-300 text-xs">--- 已显示全部内容 ---</div>
+    <div class="max-w-4xl mx-auto px-0 md:px-2">
+        <div id="post-container" class="space-y-[1px] bg-gray-200"></div>
+        
+        <div class="flex justify-center items-center gap-4 py-6 bg-white border-t">
+            <button id="prev-btn" onclick="changePage(-1)" class="px-4 py-1 border rounded text-xs text-gray-500 disabled:opacity-30">上一页</button>
+            <span id="page-info" class="text-xs font-bold text-gray-600">第 1 页</span>
+            <button id="next-btn" onclick="changePage(1)" class="px-4 py-1 border rounded text-xs text-gray-500 disabled:opacity-30">下一页</button>
         </div>
     </div>
 
-    <div id="video-page" class="bg-gray-100">
-        <div class="p-3 flex items-center border-b bg-white sticky top-0 z-50 shadow-sm">
-            <button onclick="closeVideoPage()" class="text-gray-600 text-2xl px-2">←</button>
-            <span class="font-bold text-sm ml-2">视频专区</span>
-        </div>
-        <div class="flex-1 overflow-y-auto p-2">
-            <div id="video-list-grid" class="grid grid-cols-2 gap-2"></div>
-            <div id="video-load-more" class="mt-4 mb-8 flex justify-center hidden">
-                <button onclick="loadNextVideoPage()" class="bg-white border text-gray-600 px-6 py-2 rounded-full text-xs font-bold shadow-sm">下一页</button>
-            </div>
-            <div id="video-no-more" class="mt-4 mb-8 text-center text-gray-400 text-xs hidden">--- 没有更多视频了 ---</div>
-        </div>
-    </div>
+    <div id="detail-page"><div class="p-3 flex items-center border-b bg-white"><button onclick="closeDetail()" class="text-gray-600 text-2xl px-2">←</button></div><div class="p-4 flex-1 overflow-y-auto"><div class="flex items-center mb-4"><div id="dt-avatar-container"></div><div class="ml-3"><div id="dt-author" class="text-xs font-bold text-blue-800"></div><div id="dt-views" class="text-[10px] text-orange-500 font-bold"></div></div></div><h2 id="dt-title" class="text-base mb-4"></h2><div id="dt-media" class="w-full flex flex-col gap-2"></div></div></div>
+    <div id="video-page"><div class="p-3 flex items-center border-b bg-white sticky top-0"><button onclick="closeVideoPage()" class="text-gray-600 text-2xl px-2">←</button></div><div class="flex-1 overflow-y-auto p-2"><div id="video-list-grid" class="grid grid-cols-2 gap-2"></div></div></div>
 
     <nav class="fixed bottom-0 w-full bg-white border-t flex justify-around py-1 shadow-lg z-50">
         <div class="text-center tb-text"><div class="text-lg">🏠</div><span class="text-[8px]">首页</span></div>
@@ -122,268 +59,138 @@
         <div class="text-center text-gray-400"><div class="text-lg">👤</div><span class="text-[8px]">我的</span></div>
     </nav>
 
-    <div id="auth-modal" class="fixed inset-0 bg-black/60 z-[10000] flex items-center justify-center p-6 text-center" style="display: none;">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-xs">
-            <h2 class="text-sm font-bold mb-4">用户登录</h2>
-            <input id="username" type="text" placeholder="输入用户名" class="w-full p-2 bg-gray-50 rounded border text-sm mb-3 outline-none border-gray-200">
-            <input id="password" type="password" placeholder="输入密码" class="w-full p-2 bg-gray-50 rounded border text-sm mb-4 outline-none border-gray-200">
-            <button onclick="doLogin()" class="w-full py-2 tb-bg text-white rounded font-bold text-xs">登录</button>
-            <p class="text-[10px] text-gray-400 mt-4" onclick="closeModal('auth-modal')">返回</p>
+    <div id="auth-modal" class="fixed inset-0 bg-black/60 z-[10000] flex items-center justify-center p-6" style="display: none;">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-xs text-center">
+            <h2 id="auth-title" class="text-sm font-bold mb-4">用户登录</h2>
+            <input id="username" type="text" placeholder="用户名" class="w-full p-2 bg-gray-50 rounded border text-sm mb-3 outline-none">
+            <input id="password" type="password" placeholder="密码" class="w-full p-2 bg-gray-50 rounded border text-sm mb-4 outline-none">
+            <div class="flex gap-2">
+                <button onclick="doLogin()" class="flex-1 py-2 tb-bg text-white rounded font-bold text-xs">登录</button>
+                <button onclick="doRegister()" class="flex-1 py-2 border border-blue-600 tb-text rounded font-bold text-xs">注册</button>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-4" onclick="closeModal('auth-modal')">关闭</p>
         </div>
     </div>
 
     <div id="post-modal" class="fixed inset-0 bg-white z-[5000] flex flex-col" style="display: none;">
         <div class="p-3 flex items-center border-b">
             <span onclick="closeModal('post-modal')" class="text-gray-500 text-xs">取消</span>
-            <span class="flex-1 text-center font-bold text-xs">写新贴</span>
+            <span class="flex-1 text-center font-bold text-xs">发布内容</span>
             <button onclick="submitPost()" class="tb-bg text-white px-5 py-1 rounded-full text-xs font-bold">发布</button>
         </div>
         <div class="p-4 flex-1">
-            <textarea id="post-content" maxlength="100" placeholder="分享... (100字以内)" class="w-full h-32 text-sm outline-none resize-none"></textarea>
+            <textarea id="post-content" maxlength="1000" placeholder="分享你的想法..." class="w-full h-40 text-sm outline-none resize-none"></textarea>
             <div id="media-preview" class="mt-4 flex flex-wrap gap-2"></div>
-            <input type="file" id="file-input" class="hidden" multiple accept="image/*" onchange="handleFile(this)">
-            <button onclick="document.getElementById('file-input').click()" class="mt-6 text-2xl p-3 bg-gray-50 rounded-xl border border-dashed">🖼️</button>
+            <div id="image-upload-section" class="hidden">
+                <input type="file" id="file-input" class="hidden" multiple accept="image/*" onchange="handleFile(this)">
+                <button onclick="document.getElementById('file-input').click()" class="mt-6 text-2xl p-3 bg-gray-50 rounded-xl border border-dashed">🖼️ 上传图片</button>
+                <p class="text-[10px] text-gray-400 mt-1">管理员特权：最多支持 6 张图片</p>
+            </div>
         </div>
     </div>
 
-    <div id="video-modal" class="fixed inset-0 bg-white z-[5000] flex flex-col" style="display: none;">
-        <div class="p-3 flex items-center border-b">
-            <span onclick="closeModal('video-modal')" class="text-gray-500 text-xs">取消</span>
-            <span class="flex-1 text-center font-bold text-xs">发布新视频</span>
-            <button onclick="submitVideo()" class="bg-red-500 text-white px-5 py-1 rounded-full text-xs font-bold">发布</button>
-        </div>
-        <div class="p-4 flex-1">
-            <textarea id="video-title" maxlength="50" placeholder="填写视频标题..." class="w-full h-20 text-sm outline-none resize-none"></textarea>
-            <div class="text-xs text-gray-500 mt-2 mb-2">请上传视频封面图模拟发布：</div>
-            <div id="video-cover-preview" class="mt-2 flex flex-wrap gap-2"></div>
-            <input type="file" id="video-file-input" class="hidden" accept="image/*" onchange="handleVideoFile(this)">
-            <button onclick="document.getElementById('video-file-input').click()" class="mt-4 text-2xl p-3 bg-gray-50 rounded-xl border border-dashed w-16 h-16 flex items-center justify-center">📷</button>
-        </div>
-    </div>
+    <div id="video-modal" class="fixed inset-0 bg-white z-[5000] flex flex-col" style="display: none;"><div class="p-3 flex items-center border-b"><span onclick="closeModal('video-modal')" class="text-gray-500 text-xs">取消</span><span class="flex-1 text-center font-bold text-xs">发视频</span><button onclick="submitVideo()" class="bg-red-500 text-white px-5 py-1 rounded-full text-xs font-bold">发布</button></div><div class="p-4 flex-1"><textarea id="video-title" placeholder="视频标题" class="w-full h-20 outline-none"></textarea><div id="video-cover-preview" class="mt-2"></div><input type="file" id="video-file-input" class="hidden" accept="image/*" onchange="handleVideoFile(this)"><button onclick="document.getElementById('video-file-input').click()" class="mt-4 p-3 bg-gray-50 border rounded">📷 上传封面</button></div></div>
 
     <script>
         let isLogin = false, myName = "";
+        let posts = [], videos = [];
+        let currentPage = 1;
+        const postsPerPage = 20;
+        let users = { "admin": "admin123" }; // 模拟本地数据库
         let mediaFiles = [];
-        let posts = [];
-
-        let videos = [];
-        let currentVideoPage = 1;
-        const videosPerPage = 10;
-        let pendingVideoCover = null;
 
         window.onload = function() {
-            for(let i=0; i<15; i++) {
-                const item = {
-                    id: i, user: "admin", text: `这是管理员发布的第 ${i+1} 个固定帖子。`,
-                    img: `https://picsum.photos/400/300?sig=${i}`, images: [`https://picsum.photos/400/300?sig=${i}`], views: Math.floor(Math.random()*800 + 20)
-                };
-                posts.push(item);
-                renderOnePost(item, false);
-            }
-
-            for(let i=0; i<25; i++) {
-                videos.push({
-                    id: i,
-                    title: `精彩短视频记录生活瞬间 第${i+1}集 #日常 #分享`,
-                    cover: `https://picsum.photos/300/400?sig=${i+100}`,
-                    author: "官方发布"
+            // 初始化 45 条测试数据
+            for(let i=0; i<45; i++) {
+                posts.push({
+                    id: i, user: "admin", text: `这是管理员发布的第 ${i+1} 条帖子示例。`,
+                    images: [`https://picsum.photos/400/300?sig=${i}`], views: Math.floor(Math.random()*500 + 1)
                 });
             }
+            renderPosts();
+            // 初始化视频
+            for(let i=0; i<6; i++) videos.push({id:i, title:`视频${i}`, cover:`https://picsum.photos/300/400?sig=${i+50}`, author:"官方"});
             renderHomeVideos();
         };
 
-        function renderHomeVideos() {
-            const container = document.getElementById('home-video-container');
+        function renderPosts() {
+            const container = document.getElementById('post-container');
             container.innerHTML = '';
-            const top3 = videos.slice(0, 3);
             
-            top3.forEach(v => {
+            const start = (currentPage - 1) * postsPerPage;
+            const end = start + postsPerPage;
+            const pagePosts = posts.slice().reverse().slice(start, end);
+
+            pagePosts.forEach(p => {
+                const imgHtml = (p.images && p.images.length > 0) ? `<div class="flex flex-wrap gap-1 mt-2">${p.images.slice(0,3).map(src=>`<img src="${src}" class="w-20 h-20 object-cover rounded">`).join('')}</div>` : '';
+                const delBtn = (isLogin && myName === 'admin') ? `<button onclick="deletePost(${p.id}, event)" class="text-red-500 text-[10px] ml-4">删除</button>` : '';
+                
                 const html = `
-                    <div class="flex-1 w-1/3 flex flex-col gap-1 relative overflow-hidden rounded">
-                        <img src="${v.cover}" class="w-full aspect-[3/4] object-cover bg-gray-200">
-                        <div class="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
-                            <span class="text-white text-2xl opacity-70">▶️</span>
+                    <div onclick="openDetail(${p.id})" class="bg-white p-3 border-b active:bg-gray-50">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-bold text-blue-800">${p.user}</span>
+                            <div class="flex items-center"><span class="text-[9px] text-gray-400">👁️ ${p.views}</span>${delBtn}</div>
                         </div>
-                        <div class="absolute bottom-0 w-full p-1 bg-gradient-to-t from-black/80 to-transparent">
-                            <div class="text-[10px] font-bold text-white line-clamp-2 leading-tight">${v.title}</div>
-                        </div>
+                        <div class="text-[13px] text-gray-800 line-clamp-2">${p.text}</div>
+                        ${imgHtml}
                     </div>
                 `;
                 container.insertAdjacentHTML('beforeend', html);
             });
+
+            document.getElementById('page-info').innerText = `第 ${currentPage} 页 / 共 ${Math.ceil(posts.length/postsPerPage)} 页`;
+            document.getElementById('prev-btn').disabled = currentPage === 1;
+            document.getElementById('next-btn').disabled = end >= posts.length;
         }
 
-        function openVideoPage() {
-            document.getElementById('video-page').style.display = 'flex';
-            currentVideoPage = 1;
-            document.getElementById('video-list-grid').innerHTML = '';
-            renderVideoPageGrid();
+        function changePage(step) {
+            currentPage += step;
+            window.scrollTo(0, 0);
+            renderPosts();
         }
 
-        function closeVideoPage() { document.getElementById('video-page').style.display = 'none'; }
-
-        function renderVideoPageGrid() {
-            const start = (currentVideoPage - 1) * videosPerPage;
-            const end = start + videosPerPage;
-            const pageData = videos.slice(start, end);
-            const grid = document.getElementById('video-list-grid');
-
-            pageData.forEach(v => {
-                const html = `
-                    <div class="relative w-full aspect-[3/4] rounded-lg overflow-hidden bg-gray-200 shadow-sm cursor-pointer active:scale-95 transition-transform">
-                        <img src="${v.cover}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-2 pointer-events-none">
-                            <h3 class="text-white text-xs font-bold leading-tight line-clamp-2 mb-1">${v.title}</h3>
-                            <span class="text-[9px] text-gray-300">@${v.author}</span>
-                        </div>
-                    </div>
-                `;
-                grid.insertAdjacentHTML('beforeend', html);
-            });
-
-            if (end >= videos.length) {
-                document.getElementById('video-load-more').classList.add('hidden');
-                document.getElementById('video-no-more').classList.remove('hidden');
-            } else {
-                document.getElementById('video-load-more').classList.remove('hidden');
-                document.getElementById('video-no-more').classList.add('hidden');
-            }
+        function doRegister() {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            if(u.length < 2) return alert("用户名太短");
+            if(users[u]) return alert("用户已存在");
+            users[u] = p;
+            alert("注册成功，请点击登录");
         }
 
-        function loadNextVideoPage() {
-            currentVideoPage++;
-            renderVideoPageGrid();
-        }
-
-        function showVideoModal() { document.getElementById('video-modal').style.display = 'flex'; }
-
-        function handleVideoFile(input) {
-            if(!input.files[0]) return;
-            const reader = new FileReader();
-            reader.onload = e => {
-                pendingVideoCover = e.target.result;
-                document.getElementById('video-cover-preview').innerHTML = `<img src="${e.target.result}" class="w-16 h-20 object-cover border rounded">`;
-            };
-            reader.readAsDataURL(input.files[0]);
-            input.value = "";
-        }
-
-        function submitVideo() {
-            const title = document.getElementById('video-title').value;
-            if(!title || !pendingVideoCover) return alert("请填写标题并上传封面图");
-
-            const newVideo = { id: Date.now(), title: title, cover: pendingVideoCover, author: myName };
-            videos.unshift(newVideo);
-            renderHomeVideos();
-            
-            closeModal('video-modal');
-            document.getElementById('video-title').value = "";
-            document.getElementById('video-cover-preview').innerHTML = "";
-            pendingVideoCover = null;
-        }
-
-        function renderOnePost(p, isNewPost) {
-            const thumbnail = p.img || (p.images && p.images.length > 0 ? p.images[0] : null);
-            const avatarHtml = thumbnail ? `<img src="${thumbnail}" class="w-5 h-5 rounded-full object-cover">` : `<div class="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-[8px] tb-text font-bold">吧</div>`;
-            const isAuthorized = isLogin && myName === 'admin';
-            const deleteBtn = `<button onclick="deletePost(${p.id}, event)" data-owner="${p.user}" class="${isAuthorized ? '' : 'hidden '}pointer-events-auto text-red-500 text-[10px] px-2 py-1 bg-red-50 rounded border border-red-100 z-20 relative">删除</button>`;
-
-            let imagesHtml = '';
-            if (p.images && p.images.length > 0) {
-                const imgTags = p.images.map(src => `<img src="${src}" class="w-20 h-20 object-cover rounded shadow-sm border border-gray-100">`).join('');
-                imagesHtml = `<div class="w-full flex flex-wrap gap-2 pointer-events-none">${imgTags}</div>`;
-            } else if (p.img) {
-                imagesHtml = `<div class="w-full pointer-events-none"><img src="${p.img}" class="w-20 h-20 object-cover rounded shadow-sm border border-gray-100"></div>`;
-            }
-
-            const html = `
-                <div id="p-${p.id}" onclick="openDetail(${p.id})" data-user="${p.user}" class="bg-white p-3 flex flex-col gap-2 border-b active:bg-gray-100 transition-colors cursor-pointer relative">
-                    <div class="flex items-center justify-between text-[9px] mb-1 w-full">
-                        <div class="flex items-center flex-1 pointer-events-none">${avatarHtml}<span class="font-bold text-blue-800 ml-2">${p.user}</span></div>
-                        <div class="flex items-center gap-3"><span class="text-orange-500 font-bold pointer-events-none" id="v-count-${p.id}">👁️ ${p.views}</span>${deleteBtn}</div>
-                    </div>
-                    ${imagesHtml}
-                    <div class="w-full pointer-events-none"><h3 class="text-gray-800 line-clamp-2">${p.text}</h3></div>
-                </div>
-            `;
-            const box = document.getElementById('post-container');
-            
-            if(isNewPost) {
-                if(p.user === 'admin') box.insertAdjacentHTML('afterbegin', html);
-                else {
-                    let lastAdminIndex = -1;
-                    for(let i = 0; i < box.children.length; i++) {
-                        if(box.children[i].getAttribute('data-user') === 'admin') lastAdminIndex = i;
-                    }
-                    if(lastAdminIndex !== -1) box.children[lastAdminIndex].insertAdjacentHTML('afterend', html);
-                    else box.insertAdjacentHTML('afterbegin', html);
-                }
-            } else box.insertAdjacentHTML('beforeend', html);
-        }
-
-        function deletePost(id, event) {
-            event.stopPropagation(); 
-            if(!isLogin) return alert("请先登录");
-            const postData = posts.find(x => x.id === id);
-            if(!postData || myName !== 'admin') return alert("无权删除此贴");
-            if(confirm("确定要永久删除这条帖子吗？")) {
-                posts = posts.filter(p => p.id !== id);
-                const postElement = document.getElementById(`p-${id}`);
-                if(postElement) postElement.remove();
-            }
-        }
-
-        function openDetail(id) {
-            const data = posts.find(x => x.id === id);
-            if(!data) return;
-            data.views++;
-            const listBadge = document.getElementById(`v-count-${id}`);
-            if(listBadge) listBadge.innerHTML = `👁️ ${data.views}`;
-
-            const thumbnail = data.img || (data.images && data.images.length > 0 ? data.images[0] : null);
-            const avatarEl = document.getElementById('dt-avatar-container');
-            if (thumbnail) avatarEl.innerHTML = `<img src="${thumbnail}" class="w-9 h-9 rounded-full object-cover shadow-sm">`;
-            else avatarEl.innerHTML = `<div class="w-9 h-9 bg-blue-50 rounded-full flex items-center justify-center text-xs tb-text font-bold">吧</div>`;
-
-            document.getElementById('dt-author').innerText = data.user;
-            document.getElementById('dt-views').innerText = `👁️ 浏览量: ${data.views}`;
-            document.getElementById('dt-title').innerText = data.text;
-            
-            let mediaHtml = '';
-            if (data.images && data.images.length > 0) mediaHtml = data.images.map(src => `<img src="${src}" class="w-full rounded-lg shadow-sm border">`).join('');
-            else if (data.img) mediaHtml = `<img src="${data.img}" class="w-full rounded-lg shadow-sm border">`;
-            document.getElementById('dt-media').innerHTML = mediaHtml;
-
-            const dp = document.getElementById('detail-page');
-            dp.style.display = 'flex';
-            dp.querySelector('.overflow-y-auto').scrollTop = 0;
-        }
-
-        function closeDetail() { document.getElementById('detail-page').style.display = 'none'; }
-        function showAuth() { document.getElementById('auth-modal').style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        
         function doLogin() {
             const u = document.getElementById('username').value;
             const p = document.getElementById('password').value;
-            if(!u || !p) return alert("请输入用户名和密码");
-            isLogin = true; myName = u;
-            document.getElementById('nav-user').innerText = myName;
-            closeModal('auth-modal');
+            if(users[u] && users[u] === p) {
+                isLogin = true; myName = u;
+                document.getElementById('nav-user').innerText = myName;
+                closeModal('auth-modal');
+                updatePermissions();
+            } else {
+                alert("账号或密码错误");
+            }
+        }
+
+        function updatePermissions() {
+            const uploadSection = document.getElementById('image-upload-section');
+            const videoBtn = document.getElementById('btn-post-video');
             
-            document.querySelectorAll('button[data-owner]').forEach(btn => {
-                if (myName === 'admin') btn.classList.remove('hidden');
-                else btn.classList.add('hidden');
-            });
-
-            if(myName === 'admin') document.getElementById('btn-post-video').classList.remove('hidden');
-            else document.getElementById('btn-post-video').classList.add('hidden');
-
-            document.getElementById('post-modal').style.display = 'flex';
+            // 只有 admin 可以看到图片上传和视频发布按钮
+            if(myName === 'admin') {
+                uploadSection.classList.remove('hidden');
+                videoBtn.classList.remove('hidden');
+            } else {
+                uploadSection.classList.add('hidden');
+                videoBtn.classList.add('hidden');
+            }
         }
 
         function checkAuthAndOpenPost() {
-            if(!isLogin) showAuth(); else document.getElementById('post-modal').style.display = 'flex';
+            if(!isLogin) showAuth(); 
+            else {
+                document.getElementById('post-modal').style.display = 'flex';
+                updatePermissions();
+            }
         }
 
         function handleFile(input) {
@@ -397,34 +204,73 @@
                 };
                 reader.readAsDataURL(file);
             });
-            input.value = "";
         }
 
         function submitPost() {
             const txt = document.getElementById('post-content').value;
-            if(!txt && mediaFiles.length === 0) return alert("请输入内容或上传图片");
-            const newP = { id: Date.now(), user: myName, text: txt, img: mediaFiles.length > 0 ? mediaFiles[0] : null, images: [...mediaFiles], views: 1 };
-            posts.push(newP); renderOnePost(newP, true); closeModal('post-modal');
-            document.getElementById('post-content').value = ""; document.getElementById('media-preview').innerHTML = ""; mediaFiles = [];
+            if(!txt) return alert("请输入内容");
+            // 再次校验：如果不是admin却有图片，强行清空图片
+            const finalImages = (myName === 'admin') ? [...mediaFiles] : [];
+            
+            const newP = { id: Date.now(), user: myName, text: txt, images: finalImages, views: 1 };
+            posts.push(newP);
+            currentPage = 1;
+            renderPosts();
+            closeModal('post-modal');
+            document.getElementById('post-content').value = "";
+            document.getElementById('media-preview').innerHTML = "";
+            mediaFiles = [];
         }
+
+        function deletePost(id, event) {
+            event.stopPropagation();
+            if(myName !== 'admin') return;
+            if(confirm("确定删除？")) {
+                posts = posts.filter(p => p.id !== id);
+                renderPosts();
+            }
+        }
+
+        // 基础 UI 控制函数
+        function showAuth() { document.getElementById('auth-modal').style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function openDetail(id) { 
+            const p = posts.find(x=>x.id===id); 
+            p.views++; 
+            document.getElementById('dt-author').innerText = p.user;
+            document.getElementById('dt-title').innerText = p.text;
+            document.getElementById('dt-views').innerText = `👁️ ${p.views}`;
+            document.getElementById('dt-media').innerHTML = p.images.map(s=>`<img src="${s}" class="w-full rounded mb-2">`).join('');
+            document.getElementById('detail-page').style.display='flex'; 
+        }
+        function closeDetail() { document.getElementById('detail-page').style.display='none'; }
+        function openVideoPage() { document.getElementById('video-page').style.display='flex'; renderVideoGrid(); }
+        function closeVideoPage() { document.getElementById('video-page').style.display='none'; }
+        function renderVideoGrid() {
+            const g = document.getElementById('video-list-grid'); g.innerHTML = '';
+            videos.forEach(v => {
+                g.insertAdjacentHTML('beforeend', `<div class="relative aspect-[3/4] bg-gray-200 rounded overflow-hidden"><img src="${v.cover}" class="w-full h-full object-cover"><div class="absolute bottom-0 p-1 bg-black/40 w-full text-white text-[10px]">${v.title}</div></div>`);
+            });
+        }
+        function renderHomeVideos() {
+            const c = document.getElementById('home-video-container'); c.innerHTML = '';
+            videos.slice(0,3).forEach(v => {
+                c.insertAdjacentHTML('beforeend', `<div class="flex-1 aspect-[3/4] relative rounded overflow-hidden bg-gray-100"><img src="${v.cover}" class="w-full h-full object-cover"><div class="absolute bottom-0 p-1 text-white text-[8px] bg-black/20 w-full truncate">${v.title}</div></div>`);
+            });
+        }
+        function showVideoModal() { document.getElementById('video-modal').style.display = 'flex'; }
+        function submitVideo() { alert("视频发布功能仅供演示"); closeModal('video-modal'); }
     </script>
 
     <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-web-client/boot.js"></script>
     <script>
         new CozeWebSDK.WebChatClient({
-            config: {
-                bot_id: '7624462263939842091', // 专属智能体 ID
-            },
+            config: { bot_id: '7624462263939842091' },
             componentProps: {
                 title: '客服小李',
-                layoutProps: {
-                    style: {
-                        bottom: '80px', // 强制抬高80px，防止被底部导航栏挡住
-                        zIndex: 99999   // 强制最高层级显示
-                    }
-                }
+                layoutProps: { style: { bottom: '80px', zIndex: 99999 } }
             }
         });
     </script>
-    </body>
+</body>
 </html>
