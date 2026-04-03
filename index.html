@@ -11,7 +11,7 @@
         .tb-text { color: var(--tb-blue); }
         #group-detail-page, #auth-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 9999; display: none; flex-direction: column; }
         ::-webkit-scrollbar { display: none; }
-        .photo-card { border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; aspect-ratio: 1/1; background: #f9fafb; border: 1px solid #f3f4f6; }
+        .photo-card { border-radius: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; aspect-ratio: 1/1; background: #f9fafb; border: 1px solid #f3f4f6; position: relative; }
         .content-card { border-radius: 1rem; box-shadow: 0 4px 12px -2px rgba(0,0,0,0.08); border: 1px solid #f3f4f6; }
         .active-scale:active { transform: scale(0.96); transition: 0.1s; }
     </style>
@@ -56,7 +56,7 @@
             </div>
         </div>
         <div id="related-grid" class="p-4 grid grid-cols-2 gap-4"></div>
-        <div id="status-msg" class="hidden text-center py-6 font-bold text-blue-600 animate-pulse text-sm">正在上传并同步数据...</div>
+        <div id="status-msg" class="hidden text-center py-6 font-bold text-blue-600 animate-pulse text-sm">处理中，请稍候...</div>
     </div>
 
     <div id="auth-modal" class="justify-center items-center px-10 bg-black/40">
@@ -70,7 +70,6 @@
     </div>
 
     <script>
-        // ✅ 核心修复点：将 lch 修正为了 ich
         const SB_URL = "https://rdqnfgsichwzxrvzluyg.supabase.co";
         const SB_KEY = "sb_publishable_lpKx8N7N6s3JNKbcmqyBGQ_to3pZXQk";
         const client = supabase.createClient(SB_URL, SB_KEY);
@@ -125,12 +124,47 @@
 
             const grid = document.getElementById('related-grid');
             if (data && data.length > 0) {
-                grid.innerHTML = data.map(item => `<div class="photo-card border-none shadow-none"><img src="${item.img_url}" class="w-full h-full object-cover rounded-2xl"></div>`).join('');
+                // ✅ 仅管理员可见删除按钮
+                grid.innerHTML = data.map(item => `
+                    <div class="photo-card border-none shadow-none">
+                        <img src="${item.img_url}" class="w-full h-full object-cover rounded-2xl">
+                        ${is_admin ? `<button onclick="deletePhoto('${item.id}', '${item.img_url}')" class="absolute top-2 right-2 bg-red-500/80 text-white w-7 h-7 rounded-full text-[10px] font-black active-scale flex items-center justify-center">✕</button>` : ''}
+                    </div>
+                `).join('');
             } else {
                 grid.innerHTML = `<div class="col-span-2 py-20 text-center text-gray-300 text-xs italic">空文件夹</div>`;
             }
             
             if(is_admin) document.getElementById('admin-upload-ctrl').classList.remove('hidden');
+        }
+
+        // ✅ 新增：双重物理删除照片功能
+        async function deletePhoto(id, imgUrl) {
+            if(!confirm("⚠️ 确定要永久删除这张照片吗？")) return;
+
+            const statusMsg = document.getElementById('status-msg');
+            statusMsg.classList.remove('hidden');
+            statusMsg.innerText = "正在删除...";
+
+            try {
+                // 1. 从 Storage 删除物理文件 (截取 URL 最后的照片文件名)
+                const fileName = imgUrl.split('/').pop();
+                await client.storage.from('photos').remove([fileName]);
+
+                // 2. 从 Database 移除记录
+                const { error: dbErr } = await client.from('gallery').delete().eq('id', id);
+                if (dbErr) throw dbErr;
+
+                // 3. 刷新视图
+                await openGroupDetail(activeGroupId);
+                await renderMainGrid();
+
+            } catch (err) {
+                alert("删除失败: " + err.message);
+            } finally {
+                statusMsg.classList.add('hidden');
+                statusMsg.innerText = "处理中，请稍候...";
+            }
         }
 
         async function handleBatchUpload() {
