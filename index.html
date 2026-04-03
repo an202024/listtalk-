@@ -175,6 +175,15 @@
             const isAuthorized = isLogin && myName === 'admin';
             const deleteBtn = `<button onclick="deletePost(${p.id}, event)" data-owner="${p.user}" class="${isAuthorized ? '' : 'hidden '}pointer-events-auto text-red-500 text-[10px] px-2 py-1 bg-red-50 rounded border border-red-100 z-20 relative">删除</button>`;
 
+            // 修改：遍历多张图片并渲染为小图 (w-20 h-20 代表约 80px 宽高)
+            let imagesHtml = '';
+            if (p.images && p.images.length > 0) {
+                const imgTags = p.images.map(src => `<img src="${src}" class="w-20 h-20 object-cover rounded shadow-sm border border-gray-100">`).join('');
+                imagesHtml = `<div class="w-full flex flex-wrap gap-2 pointer-events-none">${imgTags}</div>`;
+            } else if (p.img) {
+                imagesHtml = `<div class="w-full pointer-events-none"><img src="${p.img}" class="w-20 h-20 object-cover rounded shadow-sm border border-gray-100"></div>`;
+            }
+
             const html = `
                 <div id="p-${p.id}" onclick="openDetail(${p.id})" data-user="${p.user}" class="bg-white p-3 flex flex-col gap-2 border-b active:bg-gray-100 transition-colors cursor-pointer relative">
                     <div class="flex items-center justify-between text-[9px] mb-1 w-full">
@@ -188,7 +197,7 @@
                         </div>
                     </div>
                     
-                    ${thumbnail ? `<div class="w-full pointer-events-none"><img src="${thumbnail}" class="w-24 h-24 object-cover rounded shadow-sm border border-gray-100"></div>` : ''}
+                    ${imagesHtml}
                     
                     <div class="w-full pointer-events-none">
                         <h3 class="text-gray-800 line-clamp-2">${p.text}</h3>
