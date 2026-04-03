@@ -188,7 +188,6 @@
                 videos.push({
                     id: i,
                     title: `精彩短视频记录生活瞬间 第${i+1}集 #日常 #分享`,
-                    // 使用 3:4 比例的图片模拟短视频封面
                     cover: `https://picsum.photos/300/400?sig=${i+100}`,
                     author: "官方发布"
                 });
@@ -251,7 +250,6 @@
                 grid.insertAdjacentHTML('beforeend', html);
             });
 
-            // 处理按钮状态
             if (end >= videos.length) {
                 document.getElementById('video-load-more').classList.add('hidden');
                 document.getElementById('video-no-more').classList.remove('hidden');
@@ -292,9 +290,7 @@
                 author: myName
             };
 
-            // 插入到数组开头
             videos.unshift(newVideo);
-            // 重新渲染首页前3个
             renderHomeVideos();
             
             closeModal('video-modal');
@@ -303,8 +299,7 @@
             pendingVideoCover = null;
         }
 
-
-        // --- 帖子模块原有逻辑（一律未改） ---
+        // --- 帖子模块原有逻辑 ---
 
         function renderOnePost(p, isNewPost) {
             const thumbnail = p.img || (p.images && p.images.length > 0 ? p.images[0] : null);
@@ -395,13 +390,11 @@
             document.getElementById('nav-user').innerText = myName;
             closeModal('auth-modal');
             
-            // 权限解禁逻辑
             document.querySelectorAll('button[data-owner]').forEach(btn => {
                 if (myName === 'admin') btn.classList.remove('hidden');
                 else btn.classList.add('hidden');
             });
 
-            // 仅 admin 显示发布视频按钮
             if(myName === 'admin') {
                 document.getElementById('btn-post-video').classList.remove('hidden');
             } else {
@@ -437,5 +430,17 @@
             document.getElementById('post-content').value = ""; document.getElementById('media-preview').innerHTML = ""; mediaFiles = [];
         }
     </script>
-</body>
+
+    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-web-client/boot.js"></script>
+    <script>
+        new CozeWebSDK.WebChatClient({
+            config: {
+                bot_id: '7624462263939842091', // 你的专属智能体 ID
+            },
+            componentProps: {
+                title: '客服小李' // 客服窗口顶部的标题
+            }
+        });
+    </script>
+    </body>
 </html>
