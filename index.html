@@ -8,103 +8,110 @@
     <style>
         :root { --tb-blue: #2D64B3; }
         .tb-text { color: var(--tb-blue); }
-        #detail-page, #video-page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 9999; display: none; flex-direction: column; }
+        #detail-page, #photo-detail-page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 9999; display: none; flex-direction: column; }
         ::-webkit-scrollbar { display: none; }
         * { -webkit-tap-highlight-color: transparent; }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .content-card { border-radius: 1rem; box-shadow: 0 4px 10px -2px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; }
         .photo-card { border-radius: 0.75rem; box-shadow: 0 2px 5px rgba(0,0,0,0.08); overflow: hidden; aspect-ratio: 1/1; }
+        .content-card { border-radius: 1rem; box-shadow: 0 4px 10px -2px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; }
     </style>
 </head>
 <body class="bg-gray-50 pb-12">
 
-    <header class="bg-white p-4 flex items-center border-b sticky top-0 z-50">
-        <div class="flex-1 font-black text-xl tb-text tracking-tighter uppercase leading-none">GZ022.US.CI</div>
-        <div onclick="if(window.Tawk_API) window.Tawk_API.toggle()" class="flex items-center gap-1.5 px-2 py-1 cursor-pointer active:opacity-60">
-            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-            <span class="text-green-500 text-[13px] font-bold">● 客服在线</span>
+    <header class="bg-white p-4 flex flex-col border-b sticky top-0 z-50">
+        <div class="flex items-center justify-between w-full mb-2">
+            <div class="font-black text-xl tb-text tracking-tighter uppercase leading-none">GZ022.US.CI</div>
+            <div class="flex items-center gap-3">
+                <a href="https://github.com/join" target="_blank" class="text-[12px] font-bold text-gray-500 border px-3 py-1 rounded-full active:bg-gray-100">用户注册</a>
+                <div onclick="if(window.Tawk_API) window.Tawk_API.toggle()" class="flex items-center gap-1.5 cursor-pointer active:opacity-60">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="text-green-500 text-[13px] font-bold">● 客服在线</span>
+                </div>
+            </div>
         </div>
     </header>
 
     <div class="max-w-4xl mx-auto p-4">
         <div class="flex justify-between items-end mb-4">
             <h2 class="font-bold text-gray-800 text-[14px]">🔥 今日热门</h2>
-            <span class="text-gray-400 text-[10px]">查看更多照片 ></span>
         </div>
         <div id="photo-grid" class="grid grid-cols-3 gap-2.5">
             </div>
     </div>
 
     <div class="max-w-4xl mx-auto p-4 border-t border-gray-100 mt-2">
-        <div class="mb-4">
-            <h2 class="font-bold text-gray-800 text-[14px] italic">💬 客户反馈</h2>
-            <p class="text-[10px] text-blue-500 mt-1">提示：任何人只要注册后就可以在这里留言反馈，只限于文字。</p>
-        </div>
-        
+        <h2 class="font-bold text-gray-800 text-[14px] italic mb-1">💬 客户反馈</h2>
+        <p class="text-[10px] text-blue-500 mb-4 tracking-tighter">提示：任何人只要注册后就可以在这里留言反馈，只限于文字。</p>
         <div id="feedback-container" class="space-y-4"></div>
-
-        <div class="flex justify-center items-center gap-10 py-12">
-            <button onclick="changePage(-1)" class="px-8 py-1.5 border bg-white rounded-full text-[11px] text-gray-300 shadow-sm">上一页</button>
-            <span id="page-info" class="text-[10px] font-bold text-gray-300">PAGE 1</span>
-            <button onclick="changePage(1)" class="px-8 py-1.5 border bg-white rounded-full text-[11px] text-gray-300 shadow-sm">下一页</button>
-        </div>
     </div>
 
-    <footer class="text-center pb-10">
-        <a href="https://github.com/an202024/listtalk-/edit/main/index.html" target="_blank" class="text-[9px] text-gray-200 tracking-widest uppercase">Admin Portal / 登录注册</a>
+    <footer class="text-center py-10">
+        <a href="https://github.com/an202024/listtalk-/edit/main/index.html" target="_blank" class="bg-gray-800 text-white px-6 py-2 rounded-full text-[12px] font-bold shadow-lg active:scale-95 transition-transform">管理员上传照片</a>
     </footer>
 
+    <div id="photo-detail-page" class="overflow-y-auto">
+        <div class="p-4 flex items-center border-b sticky top-0 bg-white z-[10000]">
+            <button onclick="closePhotoDetail()" class="text-gray-600 text-2xl mr-4 px-2">←</button>
+            <span class="font-bold text-sm">关联展示</span>
+        </div>
+        <div class="p-4 grid grid-cols-2 gap-4">
+            <div id="related-photo-container" class="contents"></div>
+        </div>
+        <div class="p-10 text-center text-gray-300 text-[10px] tracking-widest">END</div>
+    </div>
+
     <div id="detail-page">
-        <div class="p-4 flex items-center border-b sticky top-0 bg-white z-50"><button onclick="closeDetail()" class="text-gray-600 text-2xl mr-4">←</button><span class="font-bold text-sm">反馈详情</span></div>
+        <div class="p-4 flex items-center border-b sticky top-0 bg-white"><button onclick="closeDetail()" class="text-gray-600 text-2xl mr-4 px-2">←</button><span class="font-bold text-sm">反馈内容</span></div>
         <div id="detail-content" class="p-6 overflow-y-auto"></div>
     </div>
 
     <script>
-        // 模拟 18 张照片数据 (3*6 格式)
-        const photoCount = 18;
-        function renderPhotos() {
+        // 首页 18 张图数据
+        function renderHomePhotos() {
             const container = document.getElementById('photo-grid');
             let html = '';
-            for(let i=1; i<=photoCount; i++) {
-                html += `
-                <div class="photo-card bg-gray-200 active:scale-95 transition-all">
-                    <img src="https://picsum.photos/400/400?sig=${i}" class="w-full h-full object-cover">
-                </div>`;
+            for(let i=1; i<=18; i++) {
+                html += `<div onclick="openPhotoDetail(${i})" class="photo-card bg-gray-200 active:scale-95 transition-all"><img src="https://picsum.photos/400/400?sig=${i}" class="w-full h-full object-cover"></div>`;
             }
             container.innerHTML = html;
         }
 
-        // 模拟客户反馈数据 (只限文字)
-        const feedbacks = [
-            { id: 1, user: "用户_7721", time: "2小时前", content: "服务非常专业，响应速度很快，照片质量很高。" },
-            { id: 2, user: "Kimi_Admin", time: "昨天", content: "感谢大家的支持，注册后即可在此区域发布您的文字反馈。" }
-        ];
+        // 详情页 2*3 关联图渲染
+        function openPhotoDetail(mainId) {
+            const container = document.getElementById('related-photo-container');
+            let html = '';
+            for(let i=1; i<=6; i++) {
+                html += `
+                <div class="flex flex-col gap-2">
+                    <div class="photo-card"><img src="https://picsum.photos/400/400?sig=${mainId}${i}" class="w-full h-full object-cover"></div>
+                    <div class="text-[11px] text-gray-500 text-center truncate">这是测试文字刚好十个字</div>
+                </div>`;
+            }
+            container.innerHTML = html;
+            document.getElementById('photo-detail-page').style.display = 'flex';
+            window.scrollTo(0,0);
+        }
 
+        function closePhotoDetail() { document.getElementById('photo-detail-page').style.display = 'none'; }
+
+        // 反馈数据
+        const feedbacks = [{ id: 1, user: "用户_992", time: "1小时前", content: "已经注册，这里的照片清晰度非常高，支持！" }];
         function renderFeedbacks() {
-            const container = document.getElementById('feedback-container');
-            container.innerHTML = feedbacks.map(f => `
-                <div onclick="openDetail(${f.id})" class="bg-white p-5 content-card active:bg-gray-50 transition-all">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-[12px] font-bold text-blue-600">${f.user}</span>
-                        <span class="text-[10px] text-gray-300">${f.time}</span>
-                    </div>
-                    <div class="text-[14px] text-gray-600 leading-relaxed">${f.content}</div>
+            document.getElementById('feedback-container').innerHTML = feedbacks.map(f => `
+                <div onclick="openDetail(${f.id})" class="bg-white p-4 content-card active:bg-gray-50 transition-all">
+                    <div class="flex justify-between mb-1"><span class="text-[11px] font-bold text-blue-600">${f.user}</span><span class="text-[10px] text-gray-300">${f.time}</span></div>
+                    <div class="text-[13px] text-gray-600">${f.content}</div>
                 </div>
             `).join('');
         }
 
         function openDetail(id) {
             const f = feedbacks.find(x => x.id === id);
-            document.getElementById('detail-content').innerHTML = `
-                <div class="mb-4 text-blue-600 font-bold">${f.user} 的反馈：</div>
-                <div class="text-gray-700 leading-loose border-l-4 border-blue-100 pl-4">${f.content}</div>
-            `;
+            document.getElementById('detail-content').innerHTML = `<div class="text-gray-800 leading-relaxed">${f.content}</div>`;
             document.getElementById('detail-page').style.display = 'flex';
         }
-
         function closeDetail() { document.getElementById('detail-page').style.display = 'none'; }
-        
-        window.onload = () => { renderPhotos(); renderFeedbacks(); };
+
+        window.onload = () => { renderHomePhotos(); renderFeedbacks(); };
     </script>
 
     <script type="text/javascript">
