@@ -21,7 +21,7 @@
     <header class="bg-white p-4 flex items-center border-b sticky top-0 z-50 shadow-sm">
         <div class="flex-1 font-black text-xl tb-text tracking-tighter">GZ022.US.CI</div>
         
-        <div onclick="openChat()" class="flex items-center gap-2 bg-green-100 px-4 py-2 rounded-full cursor-pointer active-scale">
+        <div onclick="forceOpenChat()" class="flex items-center gap-2 bg-green-100 px-4 py-2 rounded-full cursor-pointer active-scale border border-green-200">
             <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
             <span class="text-green-700 text-[14px] font-bold tracking-wide">客服在线</span>
         </div>
@@ -30,7 +30,7 @@
     <div class="max-w-4xl mx-auto p-3">
         <div class="flex justify-between items-end mb-3 px-1">
             <h2 class="font-bold text-gray-800 text-sm italic">🎬 热门视频</h2>
-            <span onclick="openVideoPage()" class="text-gray-400 text-[10px]">查看全部 ></span>
+            <span onclick="openVideoPage()" class="text-gray-400 text-[10px] cursor-pointer">查看全部 ></span>
         </div>
         <div id="home-video-container" class="flex gap-2.5"></div>
     </div>
@@ -51,7 +51,7 @@
     </footer>
 
     <div id="video-play-page" class="bg-black">
-        <div class="p-4 z-50"><button onclick="closeVideoPlay()" class="text-white text-2xl">✕</button></div>
+        <div class="p-4 z-50 flex justify-between"><button onclick="closeVideoPlay()" class="text-white text-2xl">✕</button></div>
         <div class="flex-1 flex items-center justify-center"><video id="main-player" class="w-full max-h-[80vh]" controls playsinline autoplay></video></div>
     </div>
     <div id="detail-page">
@@ -64,26 +64,15 @@
     </div>
 
     <script>
-        // 管理员发帖库
+        // 内容库
         const posts = [
-            { 
-                id: 1, 
-                title: "官方公告：GZ022 服务升级完毕", 
-                content: "我们已完成系统优化，现在您可以更流畅地浏览精品内容并与真人客服实时沟通。任何问题欢迎点击上方客服按钮。",
-                images: ["https://picsum.photos/400/300?sig=10"] 
-            },
-            { 
-                id: 2, 
-                title: "关于发帖内容的说明", 
-                content: "本区域仅限管理员发布优质资源和官方通告，确保信息的权威性和真实性。感谢您的关注。",
-                images: ["https://picsum.photos/400/300?sig=11"] 
-            }
+            { id: 1, title: "官方公告：GZ022 服务升级完毕", content: "我们已完成系统优化，现在您可以更流畅地浏览精品内容。任何问题欢迎点击上方客服按钮。", images: ["https://picsum.photos/400/300?sig=10"] }
         ];
 
         const videos = [
-            { id: 1, title: "官方演示 01", cover: "https://picsum.photos/400/600?sig=1", url: "https://www.w3schools.com/html/mov_bbb.mp4" },
-            { id: 2, title: "官方演示 02", cover: "https://picsum.photos/400/600?sig=2", url: "https://www.w3schools.com/html/mov_bbb.mp4" },
-            { id: 3, title: "官方演示 03", cover: "https://picsum.photos/400/600?sig=3", url: "https://www.w3schools.com/html/mov_bbb.mp4" }
+            { id: 1, title: "演示视频 01", cover: "https://picsum.photos/400/600?sig=1", url: "https://www.w3schools.com/html/mov_bbb.mp4" },
+            { id: 2, title: "演示视频 02", cover: "https://picsum.photos/400/600?sig=2", url: "https://www.w3schools.com/html/mov_bbb.mp4" },
+            { id: 3, title: "演示视频 03", cover: "https://picsum.photos/400/600?sig=3", url: "https://www.w3schools.com/html/mov_bbb.mp4" }
         ];
 
         let currentPage = 1;
@@ -91,15 +80,26 @@
 
         window.onload = () => { renderHomeVideos(); renderPosts(); };
 
-        // 修复客服唤起逻辑
-        function openChat() {
-            if (window.Tawk_API && window.Tawk_API.toggle) {
-                window.Tawk_API.toggle();
-            } else {
-                console.log("Tawk.to 尚未加载完成");
+        // --- 核心修复：强制唤起客服 ---
+        function forceOpenChat() {
+            try {
+                if (window.Tawk_API && window.Tawk_API.maximize) {
+                    window.Tawk_API.maximize(); // 强制展开对话框
+                } else {
+                    // 如果 API 没准备好，尝试直接点击 Tawk.to 的原生元素
+                    const tawkIframe = document.querySelector('iframe[title="chat widget"]');
+                    if (tawkIframe) {
+                        alert("请点击页面右下角的浮动气泡进行对话");
+                    } else {
+                        alert("客服模块正在加载中，请稍等 3 秒后再试...");
+                    }
+                }
+            } catch (e) {
+                console.error("客服调用失败", e);
             }
         }
 
+        // 渲染函数
         function renderHomeVideos() {
             const container = document.getElementById('home-video-container');
             container.innerHTML = videos.slice(0, 3).map(v => `
@@ -116,7 +116,7 @@
             const start = (currentPage - 1) * postsPerPage;
             const pageData = posts.slice().reverse().slice(start, start + postsPerPage);
             container.innerHTML = pageData.map(p => `
-                <div onclick="openDetail(${p.id})" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 active-scale transition-all">
+                <div onclick="openDetail(${p.id})" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 active-scale">
                     <div class="text-[15px] font-bold text-gray-900 mb-1">${p.title}</div>
                     <div class="text-[12px] text-gray-400 line-clamp-2 mb-3 leading-relaxed">${p.content}</div>
                     <img src="${p.images[0]}" class="w-24 h-16 object-cover rounded-xl border border-gray-50">
@@ -127,12 +127,11 @@
             document.getElementById('next-btn').disabled = (start + postsPerPage) >= posts.length;
         }
 
-        // 基础交互函数
         function playVideo(url) { const p = document.getElementById('main-player'); p.src = url; document.getElementById('video-play-page').style.display = 'flex'; p.play(); }
         function closeVideoPlay() { document.getElementById('main-player').pause(); document.getElementById('video-play-page').style.display = 'none'; }
         function openDetail(id) {
             const p = posts.find(x => x.id === id);
-            document.getElementById('detail-content').innerHTML = `<h1 class="text-xl font-bold mb-4">${p.title}</h1><div class="text-sm text-gray-600 mb-6 whitespace-pre-wrap">${p.content}</div>${p.images.map(img => `<img src="${img}" class="w-full rounded-2xl mb-4 shadow-sm border">`).join('')}`;
+            document.getElementById('detail-content').innerHTML = `<h1 class="text-xl font-bold mb-4">${p.title}</h1><div class="text-sm text-gray-600 mb-6 whitespace-pre-wrap">${p.content}</div>${p.images.map(img => `<img src="${img}" class="w-full rounded-2xl mb-4 shadow-sm">`).join('')}`;
             document.getElementById('detail-page').style.display = 'flex';
         }
         function closeDetail() { document.getElementById('detail-page').style.display = 'none'; }
