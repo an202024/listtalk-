@@ -17,7 +17,7 @@
         .active-scale:active { transform: scale(0.96); transition: 0.1s; }
     </style>
 </head>
-<body class="bg-gray-50 pb-12">
+<body class="bg-gray-50 pb-32">
 
     <header class="bg-white p-4 flex flex-col border-b sticky top-0 z-50 shadow-sm">
         <div class="flex items-center justify-between w-full mb-1">
@@ -30,29 +30,37 @@
     </header>
 
     <div class="max-w-4xl mx-auto p-4">
-        <h2 class="font-black text-gray-800 text-[15px] mb-4">🔥 今日热门</h2>
+        <h2 class="font-black text-gray-800 text-[15px] mb-4 uppercase tracking-wider">🔥 Today's Picks</h2>
         <div id="main-grid" class="grid grid-cols-3 gap-2.5"></div>
+    </div>
+
+    <div id="user-comment-box" class="max-w-4xl mx-auto p-4 border-t border-gray-100 mt-4 hidden">
+        <h2 class="font-bold text-gray-800 text-[14px] mb-3 uppercase tracking-tighter">📝 发表留言</h2>
+        <div class="flex gap-2">
+            <input id="comment-input" type="text" maxlength="50" placeholder="50字以内..." class="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-500">
+            <button onclick="submitComment()" class="bg-blue-600 text-white px-6 py-3 rounded-xl text-sm font-black active-scale shadow-lg">提交</button>
+        </div>
     </div>
 
     <div class="max-w-4xl mx-auto p-4 border-t border-gray-100 mt-2">
         <h2 class="font-bold text-gray-800 text-[14px] italic mb-1">💬 客户反馈</h2>
-        <p class="text-[10px] text-blue-500 mb-4 tracking-tighter">提示：注册后即可留言，只限文字。</p>
+        <p class="text-[10px] text-blue-500 mb-4 tracking-tighter uppercase">Verified Customer Feedbacks</p>
         <div id="feedback-container" class="space-y-4"></div>
     </div>
 
     <div id="group-detail-page" class="overflow-y-auto">
-        <div class="p-4 flex items-center border-b sticky top-0 bg-white z-50 justify-between">
+        <div class="p-4 flex items-center border-b sticky top-0 bg-white z-[10000] justify-between shadow-sm">
             <div class="flex items-center">
                 <button onclick="closeGroupDetail()" class="text-gray-600 text-3xl mr-4 px-2">←</button>
-                <span id="group-title" class="font-bold text-sm">内容详情</span>
+                <span id="group-title" class="font-black text-sm uppercase">Detail View</span>
             </div>
             <div id="admin-upload-ctrl" class="hidden">
                 <input type="file" id="batch-file" multiple accept="image/*" class="hidden" onchange="handleBatchUpload()">
-                <label for="batch-file" class="bg-black text-white px-5 py-2 rounded-full text-xs font-black active-scale uppercase">Upload (Max 6)</label>
+                <label for="batch-file" class="bg-black text-white px-5 py-2 rounded-full text-xs font-black active-scale uppercase cursor-pointer">Upload (Max 6)</label>
             </div>
         </div>
         <div id="related-grid" class="p-4 grid grid-cols-2 gap-4"></div>
-        <div id="status-msg" class="hidden text-center py-10 font-bold text-blue-600 animate-pulse text-sm">正在同步到云端数据库...</div>
+        <div id="status-msg" class="hidden text-center py-10 font-bold text-blue-600 animate-pulse text-sm">Synchronizing...</div>
     </div>
 
     <div id="auth-modal" class="justify-center items-center px-10 bg-black/40">
@@ -60,9 +68,8 @@
             <h3 class="font-black text-center mb-6 uppercase tracking-widest text-gray-800">User Access</h3>
             <input id="user-input" type="text" placeholder="用户名" class="w-full bg-gray-50 rounded-xl p-4 mb-4 outline-none border text-sm">
             <input id="pwd-input" type="password" placeholder="密码" class="w-full bg-gray-50 rounded-xl p-4 mb-6 outline-none border text-sm">
-            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black active-scale mb-3">登录</button>
-            <button onclick="handleRegister()" class="w-full bg-gray-100 text-gray-500 py-4 rounded-xl font-bold active-scale">游客注册</button>
-            <button onclick="closeAuth()" class="w-full text-gray-300 text-xs mt-6">返回首页</button>
+            <button onclick="handleLogin()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black active-scale shadow-lg mb-4">LOGIN</button>
+            <button onclick="closeAuth()" class="w-full text-gray-300 text-xs py-2 uppercase font-bold tracking-widest">Back</button>
         </div>
     </div>
 
@@ -77,38 +84,14 @@
 
         window.onload = () => { renderMainGrid(); fetchFeedbacks(); };
 
-        // 1. 登录逻辑 (管理员硬编码)
-        function handleLogin() {
-            const user = document.getElementById('user-input').value;
-            const pass = document.getElementById('pwd-input').value;
-
-            if(user === 'admin' && pass === 'admin2020') {
-                is_admin_mode = true;
-                logged_user = '管理员';
-                alert("管理员登录成功");
-                updateUIStatus();
-                closeAuth();
-            } else {
-                // 此处可扩展从自定义用户表查询
-                logged_user = user;
-                alert("游客登录成功: " + user);
-                updateUIStatus();
-                closeAuth();
-            }
-        }
-
-        function updateUIStatus() {
-            document.getElementById('login-status-btn').innerText = "已登录: " + logged_user;
-            if(is_admin_mode) document.getElementById('admin-upload-ctrl').classList.remove('hidden');
-        }
-
-        // 2. 首页网格渲染
+        // 首页渲染
         async function renderMainGrid() {
             const grid = document.getElementById('main-grid');
             const { data } = await client.from('gallery').select('*').order('created_at', { ascending: true });
             let html = '';
             for(let i=1; i<=18; i++) {
-                const coverImg = data?.find(item => item.group_id == i)?.img_url;
+                const groupPhotos = data?.filter(item => item.group_id == i);
+                const coverImg = groupPhotos && groupPhotos.length > 0 ? groupPhotos[0].img_url : null;
                 html += `
                 <div onclick="openGroupDetail(${i})" class="photo-card active-scale">
                     ${coverImg ? `<img src="${coverImg}" class="w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-200 text-2xl font-black italic">${i}</div>`}
@@ -117,7 +100,38 @@
             grid.innerHTML = html;
         }
 
-        // 3. 详情与批量上传
+        // 登录逻辑 (修复闪退)
+        function handleLogin() {
+            const user = document.getElementById('user-input').value;
+            const pass = document.getElementById('pwd-input').value;
+
+            if(user === 'admin' && pass === 'admin2020') {
+                is_admin_mode = true;
+                logged_user = 'Admin';
+                document.getElementById('user-comment-box').classList.add('hidden');
+            } else {
+                is_admin_mode = false;
+                logged_user = user;
+                document.getElementById('user-comment-box').classList.remove('hidden');
+            }
+            
+            document.getElementById('login-status-btn').innerText = "Logged: " + logged_user;
+            document.getElementById('login-status-btn').style.color = "#2D64B3";
+            closeAuth();
+            alert("登录成功: " + logged_user);
+        }
+
+        async function submitComment() {
+            const content = document.getElementById('comment-input').value;
+            if(!content) return;
+            const { error } = await client.from('customer_feedback').insert([{ user_name: logged_user, content: content.substring(0, 50) }]);
+            if(!error) {
+                alert("提交成功");
+                document.getElementById('comment-input').value = "";
+                fetchFeedbacks();
+            }
+        }
+
         async function openGroupDetail(id) {
             activeGroupId = id;
             document.getElementById('group-detail-page').style.display = 'flex';
@@ -126,23 +140,26 @@
             grid.innerHTML = (data || []).map(item => `
                 <div class="flex flex-col gap-2">
                     <div class="photo-card border-none shadow-none"><img src="${item.img_url}" class="w-full h-full object-cover rounded-2xl"></div>
-                    <div class="text-[11px] text-gray-400 text-center truncate px-1">官方精选内容</div>
+                    <div class="text-[11px] text-gray-400 text-center truncate">GZ022 Official</div>
                 </div>
             `).join('');
-            if(is_admin_mode) document.getElementById('admin-upload-ctrl').classList.remove('hidden');
+            
+            const adminCtrl = document.getElementById('admin-upload-ctrl');
+            if(is_admin_mode) adminCtrl.classList.remove('hidden');
+            else adminCtrl.classList.add('hidden');
         }
 
         async function handleBatchUpload() {
             const files = document.getElementById('batch-file').files;
-            if (files.length > 6) return alert("最多6张照片");
+            if (files.length > 6 || files.length === 0) return alert("选择1-6张照片");
             document.getElementById('status-msg').classList.remove('hidden');
             
             for (let file of files) {
                 const path = `GZ_${activeGroupId}_${Date.now()}_${Math.random().toString(36).substr(2,5)}.jpg`;
-                const { data, error } = await client.storage.from('photos').upload(path, file);
-                if (!error) {
+                const { error: upErr } = await client.storage.from('photos').upload(path, file);
+                if (!upErr) {
                     const url = `${SB_URL}/storage/v1/object/public/photos/${path}`;
-                    await client.from('gallery').insert([{ img_url: url, group_id: activeGroupId, description: "官方内容" }]);
+                    await client.from('gallery').insert([{ img_url: url, group_id: activeGroupId, description: "Official" }]);
                 }
             }
             location.reload();
@@ -152,15 +169,14 @@
             const { data } = await client.from('customer_feedback').select('*').order('created_at', { ascending: false });
             if (data) {
                 document.getElementById('feedback-container').innerHTML = data.map(f => `
-                    <div class="bg-white p-5 content-card active:bg-gray-50">
-                        <div class="text-[12px] font-black text-blue-600 mb-1 uppercase">${f.user_name || '游客'}</div>
+                    <div class="bg-white p-5 content-card active:bg-gray-50 transition-all">
+                        <div class="text-[12px] font-black text-blue-600 mb-1 uppercase">${f.user_name || 'Visitor'}</div>
                         <div class="text-[14px] text-gray-600">${f.content}</div>
                     </div>
                 `).join('');
             }
         }
 
-        function handleRegister() { alert("注册功能已开放，输入用户名密码直接登录即可自动保存。"); }
         function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; }
         function closeAuth() { document.getElementById('auth-modal').style.display = 'none'; }
         function closeGroupDetail() { document.getElementById('group-detail-page').style.display = 'none'; }
