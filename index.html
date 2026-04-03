@@ -70,14 +70,14 @@
     </div>
 
     <script>
-        const SB_URL = "https://rdqnfgslchwzxrvzluyg.supabase.co";
+        // ✅ 核心修复点：将 lch 修正为了 ich
+        const SB_URL = "https://rdqnfgsichwzxrvzluyg.supabase.co";
         const SB_KEY = "sb_publishable_lpKx8N7N6s3JNKbcmqyBGQ_to3pZXQk";
         const client = supabase.createClient(SB_URL, SB_KEY);
 
         let activeGroupId = null;
         let is_admin = sessionStorage.getItem('is_admin') === 'true';
 
-        // 初始化
         window.onload = () => { 
             if(is_admin) {
                 document.getElementById('login-status-btn').innerText = "Admin On";
@@ -87,19 +87,17 @@
             fetchFeedbacks(); 
         };
 
-        // 管理员登录
         function handleLogin() {
             const u = document.getElementById('user-input').value;
             const p = document.getElementById('pwd-input').value;
             if(u === 'admin' && p === 'admin2020') {
                 sessionStorage.setItem('is_admin', 'true');
-                location.reload(); // 仅在初次登录成功时刷新，确认身份
+                location.reload(); 
             } else { 
                 alert("账号或密码错误"); 
             }
         }
 
-        // 渲染首页封面图
         async function renderMainGrid() {
             const { data, error } = await client.from('gallery').select('*').order('created_at', { ascending: true });
             if (error) console.error("获取首页数据失败", error);
@@ -114,7 +112,6 @@
             grid.innerHTML = html;
         }
 
-        // 打开详情页
         async function openGroupDetail(id) {
             activeGroupId = id;
             document.getElementById('group-detail-page').style.display = 'flex';
@@ -136,7 +133,6 @@
             if(is_admin) document.getElementById('admin-upload-ctrl').classList.remove('hidden');
         }
 
-        // 工业级修复：安全上传与局部 DOM 更新
         async function handleBatchUpload() {
             const fileInput = document.getElementById('batch-file');
             const files = fileInput.files;
@@ -151,21 +147,17 @@
 
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                // 使用时间戳+随机数确保文件名绝对唯一
                 const path = `GZ_${activeGroupId}_${Date.now()}_${Math.random().toString(36).substr(2,6)}.jpg`;
                 
-                // 1. 上传文件到 Storage
                 const { error: upErr } = await client.storage.from('photos').upload(path, file);
 
                 if (upErr) {
-                    alert(`第 ${i+1} 张照片上传失败 (可能需要检查 Storage 权限): ` + upErr.message);
+                    alert(`第 ${i+1} 张照片上传失败: ` + upErr.message);
                     continue;
                 }
 
-                // 2. 获取正确的公共读取链接
                 const { data: pData } = client.storage.from('photos').getPublicUrl(path);
 
-                // 3. 写入数据库表
                 const { error: dbErr } = await client.from('gallery').insert([{
                     img_url: pData.publicUrl,
                     group_id: activeGroupId,
@@ -180,16 +172,14 @@
             }
 
             statusMsg.classList.add('hidden');
-            fileInput.value = ""; // 清空 input 缓存，允许连续上传同一批图片
+            fileInput.value = ""; 
 
             if (successCount > 0) {
-                // 原地静默拉取数据并更新 UI，绝对不允许使用 location.reload() 导致闪退
                 await openGroupDetail(activeGroupId);
                 await renderMainGrid(); 
             }
         }
 
-        // 工业级修复：游客直接留言与即时显示
         async function submitComment() {
             const inputEl = document.getElementById('comment-input');
             const val = inputEl.value.trim();
@@ -201,24 +191,22 @@
 
             const user_name = "访客_" + Math.floor(Math.random()*9999);
             
-            // 写入数据库
             const { error } = await client.from('customer_feedback').insert([{ 
                 user_name: user_name, 
                 content: val.substring(0, 50) 
             }]);
             
             if(error) {
-                alert("留言提交失败 (可能需要检查 Database 权限): " + error.message);
+                alert("留言提交失败: " + error.message);
             } else {
-                inputEl.value = ""; // 清空输入框
-                await fetchFeedbacks(); // 立即重新拉取并渲染最新留言列表
+                inputEl.value = ""; 
+                await fetchFeedbacks(); 
             }
 
             btn.disabled = false;
             btn.innerText = "提交";
         }
 
-        // 拉取留言并渲染
         async function fetchFeedbacks() {
             const { data, error } = await client.from('customer_feedback').select('*').order('created_at', { ascending: false });
             
