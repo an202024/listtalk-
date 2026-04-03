@@ -10,7 +10,6 @@
         .tb-text { color: var(--tb-blue); }
         .tb-bg { background-color: var(--tb-blue); }
         
-        /* 强制 60px 缩略图 */
         .compact-media {
             width: 60px !important;
             height: 60px !important;
@@ -20,7 +19,6 @@
             flex-shrink: 0;
         }
 
-        /* 标题限制两行 */
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -30,7 +28,6 @@
             font-size: 13px;
         }
         
-        /* 详情页极致修复：使用 fixed 全覆盖 + 逻辑解耦 */
         #detail-page {
             position: fixed;
             top: 0;
@@ -39,11 +36,10 @@
             bottom: 0;
             background: #fff;
             z-index: 9999;
-            display: none; /* 初始隐藏 */
+            display: none;
             flex-direction: column;
         }
 
-        /* 消除移动端点击蓝色高亮 */
         * { -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { display: none; }
     </style>
@@ -55,13 +51,31 @@
         <div id="nav-user" class="ml-3 tb-text font-bold text-[11px]" onclick="showAuth()">登录</div>
     </header>
 
-    <div class="bg-white px-3 py-1 flex items-center border-b">
+    <div class="bg-white px-3 py-1 flex items-center border-b mb-2">
         <div class="w-6 h-6 rounded bg-blue-100 flex items-center justify-center text-[10px] tb-text font-bold">吧</div>
         <div class="ml-2 flex-1"><h1 class="text-[11px] font-bold text-gray-800">自由交流吧</h1></div>
         <button class="tb-bg text-white px-3 py-0.5 rounded-full text-[9px]">关注</button>
     </div>
 
-    <div id="post-container" class="space-y-[1px] bg-gray-200"></div>
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row px-0 md:px-2 gap-2">
+        
+        <div class="w-full md:w-[65%]">
+            <div id="post-container" class="space-y-[1px] bg-gray-200"></div>
+        </div>
+
+        <div class="w-full md:w-[35%] flex flex-col gap-2 p-2 md:p-0">
+            <div class="bg-white border rounded p-3 text-center text-xs text-gray-500 shadow-sm min-h-[100px] flex items-center justify-center">
+                右侧区块 1
+            </div>
+            <div class="bg-white border rounded p-3 text-center text-xs text-gray-500 shadow-sm min-h-[100px] flex items-center justify-center">
+                右侧区块 2
+            </div>
+            <div class="bg-white border rounded p-3 text-center text-xs text-gray-500 shadow-sm min-h-[150px] flex items-center justify-center">
+                右侧区块 3
+            </div>
+        </div>
+
+    </div>
 
     <div id="detail-page">
         <div class="p-3 flex items-center border-b bg-white">
@@ -70,14 +84,16 @@
         </div>
         <div class="p-4 flex-1 overflow-y-auto">
             <div class="flex items-center mb-4">
-                <div class="w-9 h-9 bg-blue-50 rounded-full flex items-center justify-center text-xs tb-text font-bold">吧</div>
+                <div id="dt-avatar-container">
+                    <div class="w-9 h-9 bg-blue-50 rounded-full flex items-center justify-center text-xs tb-text font-bold">吧</div>
+                </div>
                 <div class="ml-3">
                     <div id="dt-author" class="text-xs font-bold text-blue-800"></div>
                     <div id="dt-views" class="text-[10px] text-orange-500 font-bold"></div>
                 </div>
             </div>
             <h2 id="dt-title" class="text-base font-medium text-gray-900 leading-relaxed mb-4"></h2>
-            <div id="dt-media" class="w-full"></div>
+            <div id="dt-media" class="w-full flex flex-col gap-2"></div>
             <div class="h-20 border-t mt-12 pt-10 text-center text-gray-300 text-xs">--- 已显示全部内容 ---</div>
         </div>
     </div>
@@ -88,42 +104,43 @@
         <div class="text-center text-gray-400"><div class="text-lg">👤</div><span class="text-[8px]">我的</span></div>
     </nav>
 
-    <div id="auth-modal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center z-[10000] p-6 text-center">
+    <div id="auth-modal" class="fixed inset-0 bg-black/60 z-[10000] flex items-center justify-center p-6 text-center" style="display: none;">
         <div class="bg-white rounded-2xl p-6 w-full max-w-xs">
-            <h2 class="text-sm font-bold mb-4">手机号快捷登录</h2>
-            <input id="phone" type="tel" placeholder="输入手机号" class="w-full p-2 bg-gray-50 rounded border text-sm mb-4 outline-none border-gray-200">
-            <button onclick="doLogin()" class="w-full py-2 tb-bg text-white rounded font-bold text-xs">进入社区</button>
+            <h2 class="text-sm font-bold mb-4">用户登录</h2>
+            <input id="username" type="text" placeholder="输入用户名" class="w-full p-2 bg-gray-50 rounded border text-sm mb-3 outline-none border-gray-200">
+            <input id="password" type="password" placeholder="输入密码" class="w-full p-2 bg-gray-50 rounded border text-sm mb-4 outline-none border-gray-200">
+            <button onclick="doLogin()" class="w-full py-2 tb-bg text-white rounded font-bold text-xs">登录</button>
             <p class="text-[10px] text-gray-400 mt-4" onclick="closeModal('auth-modal')">返回</p>
         </div>
     </div>
 
-    <div id="post-modal" class="fixed inset-0 bg-white hidden z-[5000] flex flex-col">
+    <div id="post-modal" class="fixed inset-0 bg-white z-[5000] flex flex-col" style="display: none;">
         <div class="p-3 flex items-center border-b">
             <span onclick="closeModal('post-modal')" class="text-gray-500 text-xs">取消</span>
             <span class="flex-1 text-center font-bold text-xs">写新贴</span>
             <button onclick="submitPost()" class="tb-bg text-white px-5 py-1 rounded-full text-xs font-bold">发布</button>
         </div>
         <div class="p-4 flex-1">
-            <textarea id="post-content" placeholder="分享..." class="w-full h-32 text-sm outline-none resize-none"></textarea>
-            <div id="media-preview" class="mt-4 flex gap-2"></div>
-            <input type="file" id="file-input" class="hidden" onchange="handleFile(this)">
+            <textarea id="post-content" maxlength="100" placeholder="分享... (100字以内)" class="w-full h-32 text-sm outline-none resize-none"></textarea>
+            <div id="media-preview" class="mt-4 flex flex-wrap gap-2"></div>
+            <input type="file" id="file-input" class="hidden" multiple accept="image/*" onchange="handleFile(this)">
             <button onclick="document.getElementById('file-input').click()" class="mt-6 text-2xl p-3 bg-gray-50 rounded-xl border border-dashed">🖼️</button>
         </div>
     </div>
 
     <script>
-        let isLogin = false, myName = "", mediaData = null;
+        let isLogin = false, myName = "";
+        let mediaFiles = [];
         let posts = [];
-        const nicks = ["锦绣吧友", "海上游民", "数码小达人", "热血老铁", "冲浪先锋", "自由灵魂", "极简生活", "大拿本人"];
 
-        // 页面初始化：生成10个贴
         window.onload = function() {
-            for(let i=0; i<10; i++) {
+            for(let i=0; i<15; i++) {
                 const item = {
                     id: i,
-                    user: nicks[i % nicks.length] + "_" + (100+i),
-                    text: `这是第 ${i+1} 个测试帖子。点击这一行任何地方，都可以瞬间打开详情页面，并且浏览量会实时更新。`,
+                    user: "admin", 
+                    text: `这是管理员发布的第 ${i+1} 个固定置顶帖子。点击这一行任何地方，都可以瞬间打开详情页面，并且浏览量会实时更新。`,
                     img: `https://picsum.photos/400/300?sig=${i}`,
+                    images: [`https://picsum.photos/400/300?sig=${i}`],
                     views: Math.floor(Math.random()*800 + 20)
                 };
                 posts.push(item);
@@ -131,45 +148,107 @@
             }
         };
 
-        function renderOnePost(p, toTop) {
+        function renderOnePost(p, isNewPost) {
+            const thumbnail = p.img || (p.images && p.images.length > 0 ? p.images[0] : null);
+            
+            const avatarHtml = thumbnail 
+                ? `<img src="${thumbnail}" class="w-5 h-5 rounded-full object-cover">`
+                : `<div class="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-[8px] tb-text font-bold">吧</div>`;
+
+            const isAuthorized = isLogin && myName === 'admin';
+            const deleteBtn = `<button onclick="deletePost(${p.id}, event)" data-owner="${p.user}" class="${isAuthorized ? '' : 'hidden '}pointer-events-auto text-red-500 text-[10px] px-2 py-1 bg-red-50 rounded border border-red-100 z-20 relative">删除</button>`;
+
             const html = `
-                <div id="p-${p.id}" onclick="openDetail(${p.id})" class="bg-white p-2 px-3 flex gap-3 border-b active:bg-gray-100 transition-colors cursor-pointer">
-                    <div class="flex-1 overflow-hidden pointer-events-none">
-                        <div class="flex items-center mb-1 text-[9px]">
-                            <span class="font-bold text-blue-800 mr-2">${p.user}</span>
-                            <span class="text-orange-500 font-bold" id="v-count-${p.id}">👁️ ${p.views}</span>
+                <div id="p-${p.id}" onclick="openDetail(${p.id})" data-user="${p.user}" class="bg-white p-3 flex flex-col gap-2 border-b active:bg-gray-100 transition-colors cursor-pointer relative">
+                    <div class="flex items-center justify-between text-[9px] mb-1 w-full">
+                        <div class="flex items-center flex-1 pointer-events-none">
+                            ${avatarHtml}
+                            <span class="font-bold text-blue-800 ml-2">${p.user}</span>
                         </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-orange-500 font-bold pointer-events-none" id="v-count-${p.id}">👁️ ${p.views}</span>
+                            ${deleteBtn}
+                        </div>
+                    </div>
+                    
+                    ${thumbnail ? `<div class="w-full pointer-events-none"><img src="${thumbnail}" class="w-24 h-24 object-cover rounded shadow-sm border border-gray-100"></div>` : ''}
+                    
+                    <div class="w-full pointer-events-none">
                         <h3 class="text-gray-800 line-clamp-2">${p.text}</h3>
                     </div>
-                    ${p.img ? `<img src="${p.img}" class="compact-media shadow-sm pointer-events-none">` : ''}
                 </div>
             `;
             const box = document.getElementById('post-container');
-            if(toTop) box.insertAdjacentHTML('afterbegin', html);
-            else box.insertAdjacentHTML('beforeend', html);
+            
+            if(isNewPost) {
+                if(p.user === 'admin') {
+                    box.insertAdjacentHTML('afterbegin', html);
+                } else {
+                    let lastAdminIndex = -1;
+                    for(let i = 0; i < box.children.length; i++) {
+                        if(box.children[i].getAttribute('data-user') === 'admin') {
+                            lastAdminIndex = i;
+                        }
+                    }
+                    if(lastAdminIndex !== -1) {
+                        box.children[lastAdminIndex].insertAdjacentHTML('afterend', html);
+                    } else {
+                        box.insertAdjacentHTML('afterbegin', html);
+                    }
+                }
+            } else {
+                box.insertAdjacentHTML('beforeend', html);
+            }
         }
 
-        // --- 核心修复：极致稳定的打开详情页逻辑 ---
+        function deletePost(id, event) {
+            event.stopPropagation(); 
+            if(!isLogin) return alert("请先登录");
+            
+            const postData = posts.find(x => x.id === id);
+            if(!postData) return;
+            
+            if(myName !== 'admin') {
+                return alert("无权删除此贴");
+            }
+
+            if(confirm("确定要永久删除这条帖子吗？")) {
+                posts = posts.filter(p => p.id !== id);
+                const postElement = document.getElementById(`p-${id}`);
+                if(postElement) postElement.remove();
+            }
+        }
+
         function openDetail(id) {
-            // 通过 ID 获取数据
             const data = posts.find(x => x.id === id);
             if(!data) return;
 
-            // 1. 浏览量物理加 1 并更新列表显示
             data.views++;
             const listBadge = document.getElementById(`v-count-${id}`);
             if(listBadge) listBadge.innerHTML = `👁️ ${data.views}`;
 
-            // 2. 将数据注入详情页
+            const thumbnail = data.img || (data.images && data.images.length > 0 ? data.images[0] : null);
+            const avatarEl = document.getElementById('dt-avatar-container');
+            if (thumbnail) {
+                avatarEl.innerHTML = `<img src="${thumbnail}" class="w-9 h-9 rounded-full object-cover shadow-sm">`;
+            } else {
+                avatarEl.innerHTML = `<div class="w-9 h-9 bg-blue-50 rounded-full flex items-center justify-center text-xs tb-text font-bold">吧</div>`;
+            }
+
             document.getElementById('dt-author').innerText = data.user;
             document.getElementById('dt-views').innerText = `👁️ 浏览量: ${data.views}`;
             document.getElementById('dt-title').innerText = data.text;
-            document.getElementById('dt-media').innerHTML = data.img ? `<img src="${data.img}" class="w-full rounded-lg shadow-sm border">` : '';
+            
+            let mediaHtml = '';
+            if (data.images && data.images.length > 0) {
+                mediaHtml = data.images.map(src => `<img src="${src}" class="w-full rounded-lg shadow-sm border">`).join('');
+            } else if (data.img) {
+                mediaHtml = `<img src="${data.img}" class="w-full rounded-lg shadow-sm border">`;
+            }
+            document.getElementById('dt-media').innerHTML = mediaHtml;
 
-            // 3. 强制显示详情页
             const dp = document.getElementById('detail-page');
             dp.style.display = 'flex';
-            // 滚动到详情页顶部
             dp.querySelector('.overflow-y-auto').scrollTop = 0;
         }
 
@@ -177,38 +256,72 @@
             document.getElementById('detail-page').style.display = 'none';
         }
 
-        // --- 登录/发帖 ---
-        function showAuth() { document.getElementById('auth-modal').classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        // 修改：使用原生 style.display 替代 class 切换
+        function showAuth() { document.getElementById('auth-modal').style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
         function doLogin() {
-            const val = document.getElementById('phone').value;
-            if(!val) return alert("请输入");
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            if(!u || !p) return alert("请输入用户名和密码");
+            
             isLogin = true;
-            myName = nicks[Math.floor(Math.random()*nicks.length)] + "_会员";
+            myName = u;
             document.getElementById('nav-user').innerText = myName;
             closeModal('auth-modal');
+            
+            document.querySelectorAll('button[data-owner]').forEach(btn => {
+                if (myName === 'admin') {
+                    btn.classList.remove('hidden');
+                } else {
+                    btn.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('post-modal').style.display = 'flex';
         }
+
         function checkAuthAndOpenPost() {
             if(!isLogin) showAuth();
-            else document.getElementById('post-modal').classList.remove('hidden');
+            else document.getElementById('post-modal').style.display = 'flex';
         }
+
         function handleFile(input) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                mediaData = e.target.result;
-                document.getElementById('media-preview').innerHTML = `<img src="${e.target.result}" class="w-16 h-16 object-cover border rounded">`;
-            };
-            reader.readAsDataURL(input.files[0]);
+            const files = Array.from(input.files).slice(0, 6);
+            mediaFiles = [];
+            document.getElementById('media-preview').innerHTML = "";
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    mediaFiles.push(e.target.result);
+                    document.getElementById('media-preview').insertAdjacentHTML('beforeend', `<img src="${e.target.result}" class="w-16 h-16 object-cover border rounded">`);
+                };
+                reader.readAsDataURL(file);
+            });
+            input.value = "";
         }
+
         function submitPost() {
             const txt = document.getElementById('post-content').value;
-            const newP = { id: Date.now(), user: myName, text: txt, img: mediaData, views: 1 };
+            if(!txt && mediaFiles.length === 0) return alert("请输入内容或上传图片");
+            
+            const newP = { 
+                id: Date.now(), 
+                user: myName, 
+                text: txt, 
+                img: mediaFiles.length > 0 ? mediaFiles[0] : null,
+                images: [...mediaFiles],
+                views: 1 
+            };
+            
             posts.push(newP);
-            renderOnePost(newP, true);
+            renderOnePost(newP, true); 
             closeModal('post-modal');
+            
             document.getElementById('post-content').value = "";
             document.getElementById('media-preview').innerHTML = "";
-            mediaData = null;
+            mediaFiles = [];
         }
     </script>
 </body>
