@@ -166,14 +166,12 @@
         let mediaFiles = [];
         let posts = [];
 
-        // 视频数据相关
         let videos = [];
         let currentVideoPage = 1;
         const videosPerPage = 10;
         let pendingVideoCover = null;
 
         window.onload = function() {
-            // 初始化 15 个帖子
             for(let i=0; i<15; i++) {
                 const item = {
                     id: i, user: "admin", text: `这是管理员发布的第 ${i+1} 个固定帖子。`,
@@ -183,7 +181,6 @@
                 renderOnePost(item, false);
             }
 
-            // 初始化 25 个模拟视频以供分页测试
             for(let i=0; i<25; i++) {
                 videos.push({
                     id: i,
@@ -195,9 +192,6 @@
             renderHomeVideos();
         };
 
-        // --- 视频模块逻辑 ---
-
-        // 首页渲染前3个视频
         function renderHomeVideos() {
             const container = document.getElementById('home-video-container');
             container.innerHTML = '';
@@ -226,11 +220,8 @@
             renderVideoPageGrid();
         }
 
-        function closeVideoPage() {
-            document.getElementById('video-page').style.display = 'none';
-        }
+        function closeVideoPage() { document.getElementById('video-page').style.display = 'none'; }
 
-        // 渲染视频列表页瀑布流
         function renderVideoPageGrid() {
             const start = (currentVideoPage - 1) * videosPerPage;
             const end = start + videosPerPage;
@@ -264,9 +255,7 @@
             renderVideoPageGrid();
         }
 
-        function showVideoModal() {
-            document.getElementById('video-modal').style.display = 'flex';
-        }
+        function showVideoModal() { document.getElementById('video-modal').style.display = 'flex'; }
 
         function handleVideoFile(input) {
             if(!input.files[0]) return;
@@ -283,13 +272,7 @@
             const title = document.getElementById('video-title').value;
             if(!title || !pendingVideoCover) return alert("请填写标题并上传封面图");
 
-            const newVideo = {
-                id: Date.now(),
-                title: title,
-                cover: pendingVideoCover,
-                author: myName
-            };
-
+            const newVideo = { id: Date.now(), title: title, cover: pendingVideoCover, author: myName };
             videos.unshift(newVideo);
             renderHomeVideos();
             
@@ -298,8 +281,6 @@
             document.getElementById('video-cover-preview').innerHTML = "";
             pendingVideoCover = null;
         }
-
-        // --- 帖子模块原有逻辑 ---
 
         function renderOnePost(p, isNewPost) {
             const thumbnail = p.img || (p.images && p.images.length > 0 ? p.images[0] : null);
@@ -395,11 +376,8 @@
                 else btn.classList.add('hidden');
             });
 
-            if(myName === 'admin') {
-                document.getElementById('btn-post-video').classList.remove('hidden');
-            } else {
-                document.getElementById('btn-post-video').classList.add('hidden');
-            }
+            if(myName === 'admin') document.getElementById('btn-post-video').classList.remove('hidden');
+            else document.getElementById('btn-post-video').classList.add('hidden');
 
             document.getElementById('post-modal').style.display = 'flex';
         }
@@ -435,10 +413,16 @@
     <script>
         new CozeWebSDK.WebChatClient({
             config: {
-                bot_id: '7624462263939842091', // 你的专属智能体 ID
+                bot_id: '7624462263939842091', // 专属智能体 ID
             },
             componentProps: {
-                title: '客服小李' // 客服窗口顶部的标题
+                title: '客服小李',
+                layoutProps: {
+                    style: {
+                        bottom: '80px', // 强制抬高80px，防止被底部导航栏挡住
+                        zIndex: 99999   // 强制最高层级显示
+                    }
+                }
             }
         });
     </script>
