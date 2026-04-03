@@ -19,9 +19,9 @@
 
     <header class="bg-white p-4 flex items-center border-b sticky top-0 z-50 shadow-sm">
         <div class="flex-1 font-black text-xl tb-text tracking-tighter">GZ022.US.CI</div>
-        <div class="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-full">
-            <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-            <span class="text-green-600 text-[10px] font-bold">客服在线</span>
+        <div onclick="javascript:void(Tawk_API.toggle())" class="flex items-center gap-2 bg-green-50 px-3 py-1.5 rounded-full cursor-pointer active:scale-95 transition-transform">
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            <span class="text-green-600 text-[14px] font-bold">客服在线</span>
         </div>
     </header>
 
@@ -38,14 +38,14 @@
 
     <div class="max-w-4xl mx-auto p-3">
         <h2 class="font-bold text-gray-800 text-sm mb-3 flex items-center">
-            <span class="mr-1">📌</span> 精选资讯
+            <span class="mr-1">📌</span> 精品选择
         </h2>
         <div id="post-container" class="space-y-3">
             </div>
 
         <div class="flex justify-center items-center gap-8 py-10">
             <button id="prev-btn" onclick="changePage(-1)" class="px-6 py-1.5 border bg-white rounded-full text-xs text-gray-500 disabled:opacity-30 shadow-sm">上一页</button>
-            <span id="page-info" class="text-[11px] font-bold text-gray-400">PAGE 1</span>
+            <span id="page-info" class="text-[11px] font-bold text-gray-400 font-mono">PAGE 1</span>
             <button id="next-btn" onclick="changePage(1)" class="px-6 py-1.5 border bg-white rounded-full text-xs text-gray-500 disabled:opacity-30 shadow-sm">下一页</button>
         </div>
     </div>
@@ -53,7 +53,6 @@
     <div id="video-play-page" class="bg-black">
         <div class="p-4 z-50 flex justify-between items-center">
             <button onclick="closeVideoPlay()" class="text-white text-2xl">✕</button>
-            <span class="text-white text-xs opacity-50">正在播放官方视频</span>
         </div>
         <div class="flex-1 flex items-center justify-center">
             <video id="main-player" class="w-full max-h-[80vh]" controls playsinline autoplay></video>
@@ -65,8 +64,7 @@
             <button onclick="closeDetail()" class="text-gray-600 text-2xl mr-4">←</button>
             <span class="font-bold text-sm">内容正文</span>
         </div>
-        <div id="detail-content" class="p-6 overflow-y-auto">
-            </div>
+        <div id="detail-content" class="p-6 overflow-y-auto"></div>
     </div>
 
     <div id="video-page">
@@ -74,49 +72,32 @@
             <button onclick="closeVideoPage()" class="text-gray-600 text-2xl mr-4">←</button>
             <span class="font-bold text-sm">视频全集</span>
         </div>
-        <div id="video-list-grid" class="grid grid-cols-2 gap-3 p-4 overflow-y-auto">
-            </div>
+        <div id="video-list-grid" class="grid grid-cols-2 gap-3 p-4 overflow-y-auto"></div>
     </div>
 
     <script>
-        // ==========================================
-        // 管理员数据配置区（在此处直接增删内容）
-        // ==========================================
-        
-        // 帖子数据
-        const posts = [
-            { 
-                id: 1001, 
-                title: "官方公告：GZ022.US.CI 正式上线", 
-                content: "欢迎访问我们的官方频道！如有任何商务咨询或技术支持需求，请点击页面右下角的绿色在线客服图标，我们的人员将为您提供真人即时服务。\n\n目前支持：\n1. 视频展示\n2. 实时咨询\n3. 官方资讯发布", 
-                images: ["https://picsum.photos/800/400?sig=100"] 
-            },
-            { 
-                id: 1002, 
-                title: "如何获得更流畅的观看体验？", 
-                content: "建议在高速网络环境下观看视频。如果您点击视频后加载较慢，可以尝试刷新页面。所有的视频内容均经过工业级压缩处理，确保在移动端也能快速响应。", 
-                images: ["https://picsum.photos/800/400?sig=101"] 
-            }
-        ];
+        // 管理员内容库
+        const posts = [];
+        for(let i=0; i<45; i++) {
+            posts.push({
+                id: i, 
+                title: `精品推荐：优质资源展示第 ${i+1} 号`, 
+                content: `这是由管理员发布的精品内容详细描述。包含了项目的具体介绍、核心优势以及相关技术指标说明，确保用户能获取最直观的信息。`,
+                images: [`https://picsum.photos/400/300?sig=${i}`]
+            });
+        }
 
-        // 视频数据（URL 建议替换为你 GitHub 仓库里的 Raw 链接）
         const videos = [
-            { id: 1, title: "演示视频 A", cover: "https://picsum.photos/400/600?sig=201", url: "https://www.w3schools.com/html/mov_bbb.mp4" },
-            { id: 2, title: "演示视频 B", cover: "https://picsum.photos/400/600?sig=202", url: "https://www.w3schools.com/html/mov_bbb.mp4" },
-            { id: 3, title: "演示视频 C", cover: "https://picsum.photos/400/600?sig=203", url: "https://www.w3schools.com/html/mov_bbb.mp4" },
-            { id: 4, title: "演示视频 D", cover: "https://picsum.photos/400/600?sig=204", url: "https://www.w3schools.com/html/mov_bbb.mp4" }
+            { id: 1, title: "项目演示 A", cover: "https://picsum.photos/400/600?sig=1", url: "https://www.w3schools.com/html/mov_bbb.mp4" },
+            { id: 2, title: "项目演示 B", cover: "https://picsum.photos/400/600?sig=2", url: "https://www.w3schools.com/html/mov_bbb.mp4" },
+            { id: 3, title: "项目演示 C", cover: "https://picsum.photos/400/600?sig=3", url: "https://www.w3schools.com/html/mov_bbb.mp4" }
         ];
 
-        // 分页逻辑变量
         let currentPage = 1;
         const postsPerPage = 20;
 
-        window.onload = () => {
-            renderHomeVideos();
-            renderPosts();
-        };
+        window.onload = () => { renderHomeVideos(); renderPosts(); };
 
-        // 渲染首页前三个视频
         function renderHomeVideos() {
             const container = document.getElementById('home-video-container');
             container.innerHTML = videos.slice(0, 3).map(v => `
@@ -128,7 +109,6 @@
             `).join('');
         }
 
-        // 渲染帖子列表
         function renderPosts() {
             const container = document.getElementById('post-container');
             const start = (currentPage - 1) * postsPerPage;
@@ -137,7 +117,8 @@
             container.innerHTML = pageData.map(p => `
                 <div onclick="openDetail(${p.id})" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 active:bg-gray-50 transition-colors">
                     <div class="text-[15px] font-bold text-gray-900 mb-1">${p.title}</div>
-                    <div class="text-[12px] text-gray-400 line-clamp-2 leading-relaxed">${p.content}</div>
+                    <div class="text-[12px] text-gray-400 line-clamp-2 leading-relaxed mb-2">${p.content}</div>
+                    <img src="${p.images[0]}" class="w-20 h-20 object-cover rounded-lg">
                 </div>
             `).join('');
             
@@ -146,54 +127,53 @@
             document.getElementById('next-btn').disabled = (start + postsPerPage) >= posts.length;
         }
 
-        // 播放控制
         function playVideo(url) {
-            const player = document.getElementById('main-player');
-            player.src = url;
+            const p = document.getElementById('main-player');
+            p.src = url;
             document.getElementById('video-play-page').style.display = 'flex';
-            player.load();
-            player.play();
+            p.play();
         }
 
         function closeVideoPlay() {
-            const player = document.getElementById('main-player');
-            player.pause();
-            player.src = "";
+            document.getElementById('main-player').pause();
             document.getElementById('video-play-page').style.display = 'none';
         }
 
-        // 详情与专区控制
         function openDetail(id) {
             const p = posts.find(x => x.id === id);
             document.getElementById('detail-content').innerHTML = `
-                <h1 class="text-xl font-bold mb-4 text-gray-900">${p.title}</h1>
-                <div class="text-sm text-gray-600 leading-relaxed mb-8 whitespace-pre-wrap">${p.content}</div>
-                ${p.images.map(img => `<img src="${img}" class="w-full rounded-2xl mb-4 shadow-lg border border-gray-100">`).join('')}
+                <h1 class="text-xl font-bold mb-4">${p.title}</h1>
+                <div class="text-sm text-gray-600 leading-relaxed mb-6 whitespace-pre-wrap">${p.content}</div>
+                ${p.images.map(img => `<img src="${img}" class="w-full rounded-2xl mb-4 shadow-md">`).join('')}
             `;
             document.getElementById('detail-page').style.display = 'flex';
         }
 
         function closeDetail() { document.getElementById('detail-page').style.display = 'none'; }
-
-        function openVideoPage() {
-            const grid = document.getElementById('video-list-grid');
-            grid.innerHTML = videos.map(v => `
-                <div onclick="playVideo('${v.url}')" class="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-lg active:scale-95 transition-transform bg-gray-100">
+        function openVideoPage() { document.getElementById('video-page').style.display = 'flex'; renderVideoGrid(); }
+        function closeVideoPage() { document.getElementById('video-page').style.display = 'none'; }
+        function changePage(step) { currentPage += step; window.scrollTo(0,0); renderPosts(); }
+        function renderVideoGrid() {
+            document.getElementById('video-list-grid').innerHTML = videos.map(v => `
+                <div onclick="playVideo('${v.url}')" class="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-lg bg-gray-100">
                     <img src="${v.cover}" class="w-full h-full object-cover">
                     <div class="absolute bottom-0 p-3 bg-gradient-to-t from-black w-full text-white text-xs font-bold">${v.title}</div>
                 </div>
             `).join('');
-            document.getElementById('video-page').style.display = 'flex';
-        }
-
-        function closeVideoPage() { document.getElementById('video-page').style.display = 'none'; }
-        
-        function changePage(step) {
-            currentPage += step;
-            window.scrollTo(0, 0);
-            renderPosts();
         }
     </script>
 
-    </body>
+    <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/67ede97a6e37941913988636/1imrtg97t';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
+
+</body>
 </html>
