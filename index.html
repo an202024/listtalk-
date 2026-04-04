@@ -6,6 +6,7 @@
     <title>GZ022.US.CI - 官方内容精选</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
     <style>
         :root { --tb-blue: #2D64B3; }
         .tb-text { color: var(--tb-blue); }
@@ -85,7 +86,6 @@
         const SB_KEY = "sb_publishable_lpKx8N7N6s3JNKbcmqyBGQ_to3pZXQk";
         const client = supabase.createClient(SB_URL, SB_KEY);
 
-        // ✅ 仅修改了这里的密码配置
         const ACCESS_CONFIG = {
             "1717": [1, 6],   
             "4747": [7, 12],  
@@ -185,21 +185,60 @@
             if(is_admin) document.getElementById('admin-upload-ctrl').classList.remove('hidden');
         }
 
+        // ✅ 仅替换：工业级并发压缩上传函数
         async function handleBatchUpload() {
-            const files = document.getElementById('batch-file').files;
-            if (files.length > 6 || files.length === 0) return;
-            document.getElementById('status-msg').classList.remove('hidden');
-            for (let file of files) {
-                const path = `GZ_${activeGroupId}_${Date.now()}_${Math.random().toString(36).substr(2,4)}.jpg`;
-                const { error: upErr } = await client.storage.from('photos').upload(path, file);
-                if (!upErr) {
+            const fileInput = document.getElementById('batch-file');
+            const files = fileInput.files;
+            
+            if (files.length === 0) return;
+            if (files.length > 6) return alert("一次最多只能选择 6 张照片");
+
+            const statusMsg = document.getElementById('status-msg');
+            statusMsg.classList.remove('hidden');
+            statusMsg.innerText = "正在压缩并加速上传...";
+            
+            let successCount = 0;
+
+            const compressionOptions = {
+                maxSizeMB: 1,
+                maxWidthOrHeight: 1920,
+                useWebWorker: true 
+            };
+
+            const uploadTasks = Array.from(files).map(async (file) => {
+                try {
+                    const compressedFile = await imageCompression(file, compressionOptions);
+                    const path = `GZ_${activeGroupId}_${Date.now()}_${Math.random().toString(36).substr(2,6)}.jpg`;
+                    
+                    const { error: upErr } = await client.storage.from('photos').upload(path, compressedFile);
+                    if (upErr) throw upErr;
+
                     const { data: pData } = client.storage.from('photos').getPublicUrl(path);
-                    await client.from('gallery').insert([{ img_url: pData.publicUrl, group_id: activeGroupId, description: "Official" }]);
+
+                    const { error: dbErr } = await client.from('gallery').insert([{
+                        img_url: pData.publicUrl,
+                        group_id: activeGroupId,
+                        description: "Official"
+                    }]);
+                    if (dbErr) throw dbErr;
+
+                    successCount++;
+                } catch (err) {
+                    console.error("单张图片处理失败:", err);
                 }
+            });
+
+            await Promise.all(uploadTasks);
+
+            statusMsg.classList.add('hidden');
+            fileInput.value = ""; 
+
+            if (successCount > 0) {
+                await openGroupDetail(activeGroupId);
+                await renderMainGrid(); 
+            } else {
+                alert("网络波动，上传失败，请重试");
             }
-            document.getElementById('status-msg').classList.add('hidden');
-            openGroupDetail(activeGroupId);
-            renderMainGrid(); 
         }
 
         async function deletePhoto(id, imgUrl) {
