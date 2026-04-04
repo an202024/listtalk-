@@ -67,7 +67,7 @@
                 <label for="batch-file" class="bg-black text-white px-5 py-2 rounded-full text-xs font-black active-scale cursor-pointer uppercase shadow-lg">Upload</label>
             </div>
         </div>
-        <div id="related-grid" class="p-4 grid grid-cols-2 gap-4"></div>
+        <div id="related-grid" class="p-4 grid grid-cols-1 gap-4"></div>
         <div id="status-msg" class="hidden text-center py-6 font-bold text-blue-600 animate-pulse text-sm">正在同步数据...</div>
     </div>
 
@@ -116,7 +116,6 @@
                 visibleRange = ACCESS_CONFIG[savedCode];
                 document.getElementById('access-screen').style.display = 'none';
                 
-                // ✅ 为这3组普通访问者也设置退出按钮
                 const loginBtn = document.getElementById('login-status-btn');
                 loginBtn.innerText = "退出查看";
                 loginBtn.style.color = "#ef4444"; 
@@ -128,7 +127,6 @@
             fetchFeedbacks(); 
         };
 
-        // ✅ 统一的退出函数
         function userLogout() {
             if(confirm("确定要安全退出吗？")) {
                 sessionStorage.removeItem('user_access_code');
@@ -161,7 +159,6 @@
                 sessionStorage.setItem('user_access_code', code); 
                 document.getElementById('access-screen').style.display = 'none';
                 
-                // ✅ 为这3组普通访问者也设置退出按钮
                 const loginBtn = document.getElementById('login-status-btn');
                 loginBtn.innerText = "退出查看";
                 loginBtn.style.color = "#ef4444";
