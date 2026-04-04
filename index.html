@@ -104,8 +104,13 @@
                 is_admin = true;
                 visibleRange = [1, 18];
                 document.getElementById('access-screen').style.display = 'none';
-                document.getElementById('login-status-btn').innerText = "Admin On";
-                document.getElementById('login-status-btn').style.color = "#2D64B3";
+                
+                // ✅ 登录后按钮变为红色的退出按钮
+                const loginBtn = document.getElementById('login-status-btn');
+                loginBtn.innerText = "退出登录";
+                loginBtn.style.color = "#ef4444"; // 红色
+                loginBtn.onclick = adminLogout; 
+                
                 renderMainGrid();
             } else if (ACCESS_CONFIG[savedCode]) {
                 is_admin = false;
@@ -117,6 +122,14 @@
             fetchFeedbacks(); 
         };
 
+        // ✅ 新增退出函数
+        function adminLogout() {
+            if(confirm("确定要退出管理员身份吗？")) {
+                sessionStorage.removeItem('user_access_code');
+                location.reload(); 
+            }
+        }
+
         function verifyAccess() {
             const code = document.getElementById('access-code').value.trim();
             const errorEl = document.getElementById('access-error');
@@ -126,8 +139,13 @@
                 visibleRange = [1, 18];
                 sessionStorage.setItem('user_access_code', code); 
                 document.getElementById('access-screen').style.display = 'none';
-                document.getElementById('login-status-btn').innerText = "Admin On";
-                document.getElementById('login-status-btn').style.color = "#2D64B3";
+                
+                // ✅ 登录后按钮变为红色的退出按钮
+                const loginBtn = document.getElementById('login-status-btn');
+                loginBtn.innerText = "退出登录";
+                loginBtn.style.color = "#ef4444";
+                loginBtn.onclick = adminLogout;
+                
                 renderMainGrid();
                 return;
             }
@@ -185,7 +203,6 @@
             if(is_admin) document.getElementById('admin-upload-ctrl').classList.remove('hidden');
         }
 
-        // ✅ 仅替换：工业级并发压缩上传函数
         async function handleBatchUpload() {
             const fileInput = document.getElementById('batch-file');
             const files = fileInput.files;
