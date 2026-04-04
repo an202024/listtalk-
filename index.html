@@ -105,26 +105,32 @@
                 visibleRange = [1, 18];
                 document.getElementById('access-screen').style.display = 'none';
                 
-                // ✅ 登录后按钮变为红色的退出按钮
                 const loginBtn = document.getElementById('login-status-btn');
                 loginBtn.innerText = "退出登录";
-                loginBtn.style.color = "#ef4444"; // 红色
-                loginBtn.onclick = adminLogout; 
+                loginBtn.style.color = "#ef4444"; 
+                loginBtn.onclick = userLogout; 
                 
                 renderMainGrid();
             } else if (ACCESS_CONFIG[savedCode]) {
                 is_admin = false;
                 visibleRange = ACCESS_CONFIG[savedCode];
                 document.getElementById('access-screen').style.display = 'none';
+                
+                // ✅ 为这3组普通访问者也设置退出按钮
+                const loginBtn = document.getElementById('login-status-btn');
+                loginBtn.innerText = "退出查看";
+                loginBtn.style.color = "#ef4444"; 
+                loginBtn.onclick = userLogout; 
+
                 renderMainGrid();
             }
             
             fetchFeedbacks(); 
         };
 
-        // ✅ 新增退出函数
-        function adminLogout() {
-            if(confirm("确定要退出管理员身份吗？")) {
+        // ✅ 统一的退出函数
+        function userLogout() {
+            if(confirm("确定要安全退出吗？")) {
                 sessionStorage.removeItem('user_access_code');
                 location.reload(); 
             }
@@ -140,11 +146,10 @@
                 sessionStorage.setItem('user_access_code', code); 
                 document.getElementById('access-screen').style.display = 'none';
                 
-                // ✅ 登录后按钮变为红色的退出按钮
                 const loginBtn = document.getElementById('login-status-btn');
                 loginBtn.innerText = "退出登录";
                 loginBtn.style.color = "#ef4444";
-                loginBtn.onclick = adminLogout;
+                loginBtn.onclick = userLogout;
                 
                 renderMainGrid();
                 return;
@@ -155,6 +160,13 @@
                 visibleRange = ACCESS_CONFIG[code];
                 sessionStorage.setItem('user_access_code', code); 
                 document.getElementById('access-screen').style.display = 'none';
+                
+                // ✅ 为这3组普通访问者也设置退出按钮
+                const loginBtn = document.getElementById('login-status-btn');
+                loginBtn.innerText = "退出查看";
+                loginBtn.style.color = "#ef4444";
+                loginBtn.onclick = userLogout;
+
                 renderMainGrid();
             } else {
                 errorEl.classList.remove('hidden');
